@@ -6,7 +6,7 @@ import (
 	"eckctl/pkg/generated"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -41,7 +41,7 @@ func createApplicationCredential(bearer string, url string) ApplicationCredentia
 		log.Fatal(err)
 	}
 
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, _ := io.ReadAll(resp.Body)
 	ac := ApplicationCredential{}
 	err = json.Unmarshal(body, &ac)
 	if resp.StatusCode != http.StatusOK {

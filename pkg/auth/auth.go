@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -65,7 +65,7 @@ func getBearer(url string, t string, p string) string {
 		log.Fatal(err, resp.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -93,12 +93,13 @@ func GetToken(url string, username string, password string, project string) stri
 		log.Fatal(err)
 	}
 
+	fmt.Println(resp.StatusCode)
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("Unexpected response code: ", resp.StatusCode)
 		log.Fatal(err, resp.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}

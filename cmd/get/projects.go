@@ -6,7 +6,7 @@ import (
 	"eckctl/pkg/generated"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"time"
 
@@ -39,7 +39,7 @@ func getProjects(bearer string, url string) {
 		fmt.Println("Error getting projects: ", err)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}

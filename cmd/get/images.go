@@ -6,7 +6,7 @@ import (
 	"eckctl/pkg/generated"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"sort"
 	"time"
@@ -41,7 +41,7 @@ func getImages(bearer string, url string) {
 		fmt.Println("Error getting images: ", err)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}

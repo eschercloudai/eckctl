@@ -1,0 +1,94 @@
+name: Build on Tag
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint files
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.19'
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          skip-cache: true
+          args: -e S1039
+
+  test:
+    name: Run tests
+    runs-on: 'ubuntu-22.04'
+    needs: lint
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.19.2'
+      - run: go test -v -cover ./...
+
+  security-checks:
+    runs-on: ubuntu-22.04
+    needs: test
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - name: Build Local Container
+        uses: eschercloudai/container-security-action@v0.0.1-beta.2
+        if: github.event_name != 'pull_request'
+        id: build-and-scan
+        with:
+          image-repo: ghcr.io
+          repo-username: ${{ github.repository_owner }}
+          repo-password: ${{ secrets.GITHUB_TOKEN }}
+          image-name: eckctl
+          image-tag: ${{ github.ref_name }}
+          min-severity: critical
+          add-latest-tag: true
+          publish-image: true
+          cosign-private-key: ${{secrets.COSIGN_KEY}}
+          cosign-password: ${{secrets.COSIGN_PASSWORD}}
+          cosign-tlog: true
+          dockerfile-path: docker
+
+  release:
+    name: Create Release
+    runs-on: 'ubuntu-22.04'
+    needs: security-checks
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.19.2'
+      - name: Get OS and arch info
+        run: |
+          GOARCH=amd64
+          GOOS=linux
+          BINARY_NAME=${{github.repository}}-$GOOS-$GOARCH
+          echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
+          echo "GOOS=$GOOS" >> $GITHUB_ENV
+          echo "GOARCH=$GOARCH" >> $GITHUB_ENV
+      - name: Build
+        run: |
+          CGO_ENABLED=0 go build -o "$BINARY_NAME" main.go
+      - name: Release Notes
+        run: |
+          git log $(git describe HEAD~ --tags --abbrev=0)..HEAD --pretty='format:* %h %s%n  * %an <%ae>' --no-merges >> ".github/RELEASE-TEMPLATE.md"
+      - name: Release with Notes
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: ".github/RELEASE-TEMPLATE.md"
+          draft: false
+          files: ${{env.BINARY_NAME}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

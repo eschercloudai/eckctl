@@ -6,7 +6,7 @@ import (
 	"eckctl/pkg/generated"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"time"
 
@@ -39,7 +39,7 @@ func getControlPlaneBundles(bearer string, url string) []generated.ApplicationBu
 		log.Fatal(err)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -67,7 +67,7 @@ func getClusterBundles(bearer string, url string) []generated.ApplicationBundle 
 
 	versions := generated.ApplicationBundles{}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}

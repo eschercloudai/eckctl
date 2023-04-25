@@ -5,6 +5,7 @@ import (
 	"eckctl/cmd/delete"
 	"eckctl/cmd/get"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -86,7 +87,10 @@ func bindFlags(cmd *cobra.Command, v *viper.Viper) {
 
 		if !f.Changed && v.IsSet(configName) {
 			val := v.Get(configName)
-			cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
+			err := cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
+			if err != nil {
+				log.Fatalln(err)
+			}
 		}
 	})
 }
