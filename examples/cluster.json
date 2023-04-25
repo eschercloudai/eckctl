@@ -1,0 +1,44 @@
+{
+    "applicationBundle": {
+        "name": "kubernetes-cluster-1.1.0",
+        "version": "1.1.0"
+    },
+    "openstack": {
+        "computeAvailabilityZone": "nova",
+        "volumeAvailabilityZone": "nova",
+        "externalNetworkID": "c9d130bc-301d-45c0-9328-a6964af65579",
+        "sshKeyName": "deadline-ed25519"
+    },
+    "network": {
+        "nodePrefix": "192.168.0.0/16",
+        "servicePrefix": "172.16.0.0/12",
+        "podPrefix": "10.0.0.0/8",
+        "dnsNameservers": [
+            "8.8.8.8",
+            "8.8.4.4"
+        ]
+    },
+    "controlPlane": {
+        "replicas": 1,
+        "version": "v1.26.1",
+        "imageName": "eck-230408-3464bc03",
+        "flavorName": "g.2.standard",
+        "disk": {
+            "size": 50
+        }
+    },
+    "workloadPools": [
+        {
+            "name": "worker",
+            "machine": {
+                "replicas": 1,
+                "version": "v1.26.1",
+                "imageName": "eck-230408-3464bc03",
+                "flavorName": "g.2.standard",
+                "disk": {
+                    "size": 50
+                }
+            }
+        }
+    ]
+}
