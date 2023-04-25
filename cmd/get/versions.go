@@ -15,7 +15,7 @@ import (
 
 var versionsCmd = &cobra.Command{
 	Use:   "versions",
-	Short: "Get versions",
+	Short: "Get versions (application bundles)",
 
 	Run: func(cmd *cobra.Command, args []string) {
 		url := cmd.Flag("url").Value.String()

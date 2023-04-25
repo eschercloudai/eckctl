@@ -13,8 +13,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var controlPlaneName string
-
 var clustersCmd = &cobra.Command{
 	Use:   "clusters",
 	Short: "Get clusters",

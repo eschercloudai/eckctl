@@ -14,15 +14,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type Images struct {
-	Created  string `json:"created"`
-	Id       string `json:"id"`
-	Versions struct {
-		Kubernetes   string `json:"kubernetes"`
-		NvidiaDriver string `json:"nvidiaDriver"`
-	} `json:"versions"`
-}
-
 // imagesCmd represents the images command
 var imagesCmd = &cobra.Command{
 	Use:   "images",

@@ -13,8 +13,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var name string
-
 func controlPlaneCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "controlplanes",
@@ -29,7 +27,7 @@ func controlPlaneCmd() *cobra.Command {
 			getControlPlanes(token, url)
 		},
 	}
-	cmd.Flags().StringVar(&name, "name", "", "The name of the control plane to list")
+	cmd.Flags().StringVar(&controlPlaneName, "name", "", "The name of the control plane to list")
 	return cmd
 }
 
@@ -55,9 +53,9 @@ func getControlPlanes(bearer string, url string) {
 		log.Fatal(err)
 	}
 
-	if name != "" {
+	if controlPlaneName != "" {
 		for _, i := range controlPlanes {
-			if i.Name == name {
+			if i.Name == controlPlaneName {
 				fmt.Printf("Name: %s\t", i.Name)
 				fmt.Printf("Status: %s\t", i.Status.Status)
 				fmt.Printf("Version: %s\n", i.ApplicationBundle.Version)

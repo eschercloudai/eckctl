@@ -11,8 +11,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var clusterName string
-
 var kubeconfigCmd = &cobra.Command{
 	Use:   "kubeconfig",
 	Short: "Get kubeconfig",
