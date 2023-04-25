@@ -15,8 +15,8 @@ var applicationCredentialName string
 
 func deleteApplicationCredentialCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "Delete an application credential",
-		Short: "A brief description of your command",
+		Use:   "applicationcredential",
+		Short: "Delete an application credential",
 		Run: func(cmd *cobra.Command, args []string) {
 			url := cmd.Flag("url").Value.String()
 			u := cmd.Flag("username").Value.String()
@@ -27,6 +27,7 @@ func deleteApplicationCredentialCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVar(&applicationCredentialName, "name", "", "The name of the application credential to be deleted")
+	cmd.MarkFlagRequired("name")
 	return cmd
 }
 
