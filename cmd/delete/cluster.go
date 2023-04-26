@@ -36,10 +36,12 @@ func deleteCluster(bearer string, url string) {
 	defer cancel()
 
 	resp, err := client.DeleteApiV1ControlplanesControlPlaneNameClustersClusterName(ctx, controlPlaneName, clusterName, auth.SetAuthorizationHeader(bearer))
-	if resp.StatusCode != http.StatusAccepted {
-		fmt.Println(resp.StatusCode)
+	if err != nil {
 		log.Fatal(err)
 	}
+	if resp.StatusCode != http.StatusAccepted {
+		log.Fatalf("Error deleting cluster %s from control plane %s, %v", clusterName, controlPlaneName, resp.StatusCode)
+	}
 
-	fmt.Printf("Cluster %s deleted from controlplane %s\n", clusterName, controlPlaneName)
+	fmt.Printf("Deleting cluster %s from controlplane %s\n", clusterName, controlPlaneName)
 }

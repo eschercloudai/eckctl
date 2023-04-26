@@ -3,7 +3,6 @@ package delete
 import (
 	"context"
 	"eckctl/pkg/auth"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -44,7 +43,6 @@ func deleteApplicationCredential(bearer string, url string) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println(resp.StatusCode)
-		log.Fatal(err)
+		log.Fatalf("Error deleting application credential %s, %v", applicationCredentialName, resp.StatusCode)
 	}
 }

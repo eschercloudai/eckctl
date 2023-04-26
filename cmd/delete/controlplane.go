@@ -1,11 +1,11 @@
 package delete
 
 import (
+	"context"
 	"eckctl/pkg/auth"
-	"eckctl/pkg/generated"
-	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -24,29 +24,23 @@ func deleteControlPlaneCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVar(&controlPlaneName, "name", "", "The name of the control plane to be deleted")
+	cmd.MarkFlagRequired("name")
 	return cmd
 }
 
-func deleteControlPlane(b string, u string) {
-	client := &http.Client{}
+func deleteControlPlane(bearer string, url string) {
 
-	req, err := generated.NewDeleteApiV1ControlplanesControlPlaneNameRequest(u, controlPlaneName)
+	client := auth.InitClient(url)
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	resp, err := client.DeleteApiV1ControlplanesControlPlaneName(ctx, controlPlaneName, auth.SetAuthorizationHeader(bearer))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(resp, err)
 	}
-
-	req.Header.Set("Authorization", "Bearer "+b)
-
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println(resp.StatusCode)
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusAccepted {
-		fmt.Println(resp.StatusCode)
-		log.Fatal(err)
+		log.Fatalf("Error deleting control plane %s, %v", controlPlaneName, resp.StatusCode)
 	}
 }
