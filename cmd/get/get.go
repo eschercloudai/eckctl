@@ -2,6 +2,7 @@ package get
 
 import (
 	"github.com/spf13/cobra"
+	"log"
 )
 
 var (
@@ -36,11 +37,20 @@ func NewGetCommand() *cobra.Command {
 	getCmd.AddCommand(commands...)
 
 	clustersCmd.Flags().StringVar(&controlPlaneName, "controlplane", "", "Name of control plane")
-	clustersCmd.MarkFlagRequired("controlplane")
+	err := clustersCmd.MarkFlagRequired("controlplane")
+	if err != nil {
+		log.Fatalln(err)
+	}
 	kubeconfigCmd.Flags().StringVar(&controlPlaneName, "controlplane", "", "Name of control plane")
 	kubeconfigCmd.Flags().StringVar(&clusterName, "cluster", "", "Name of cluster")
-	kubeconfigCmd.MarkFlagRequired("controlplane")
-	kubeconfigCmd.MarkFlagRequired("cluster")
+	err = kubeconfigCmd.MarkFlagRequired("controlplane")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	err = kubeconfigCmd.MarkFlagRequired("cluster")
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	return getCmd
 

@@ -2,6 +2,7 @@ package create
 
 import (
 	"github.com/spf13/cobra"
+	"log"
 )
 
 var (
@@ -35,14 +36,26 @@ func NewCreateCommand() *cobra.Command {
 	createApplicationCredentialCmd.Flags().StringVar(&applicationCredentialName, "name", "", "Name of application credential")
 	createApplicationCredentialCmd.MarkFlagsRequiredTogether("controlplane", "name")
 	createControlPlaneCmd.Flags().StringVar(&controlPlaneName, "name", "", "Name of control plane")
-	createControlPlaneCmd.MarkFlagRequired("name")
+	err := createControlPlaneCmd.MarkFlagRequired("name")
+	if err != nil {
+		log.Fatalln(err)
+	}
 	createControlPlaneCmd.Flags().StringVar(&controlPlaneVersion, "version", "1.0.1", "Version of control plane")
 	createClusterCmd.Flags().StringVar(&clusterName, "name", "", "Name of cluster")
 	createClusterCmd.Flags().StringVar(&controlPlaneName, "controlplane", "", "Name of associated control plane")
 	createClusterCmd.Flags().StringVar(&clusterDefPath, "json", "", "Path to JSON cluster definition")
-	createClusterCmd.MarkFlagRequired("name")
-	createClusterCmd.MarkFlagRequired("controlplane")
-	createClusterCmd.MarkFlagRequired("json")
+	err = createClusterCmd.MarkFlagRequired("name")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	err = createClusterCmd.MarkFlagRequired("controlplane")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	err = createClusterCmd.MarkFlagRequired("json")
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	return createCmd
 }

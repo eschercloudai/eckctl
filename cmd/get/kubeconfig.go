@@ -4,7 +4,7 @@ import (
 	"context"
 	"eckctl/pkg/auth"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"time"
 
@@ -36,7 +36,7 @@ func getKubeConfig(bearer string, url string) {
 		fmt.Println("Error retrieving clusters: ", err)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}

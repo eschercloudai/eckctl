@@ -6,7 +6,6 @@ import (
 	"eckctl/pkg/generated"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -31,16 +30,11 @@ var createClusterCmd = &cobra.Command{
 
 func readClusterDefs(filePath string) (generated.KubernetesCluster, error) {
 	var clusters generated.KubernetesCluster
-	file, err := os.Open(filePath)
+	bytes, err := os.ReadFile(filePath)
 	if err != nil {
 		return clusters, fmt.Errorf("error opening file: %w", err)
 	}
-	defer file.Close()
 
-	bytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		return clusters, fmt.Errorf("error opening file: %w", err)
-	}
 	err = json.Unmarshal(bytes, &clusters)
 	if err != nil {
 		return clusters, fmt.Errorf("error unmarshalling JSON: %w", err)
