@@ -20,6 +20,7 @@ RUN apk update --no-cache
 RUN apk add bash build-base jq curl git
 
 RUN echo "eckctl:x:1000:1000:Ecktl Non Root,,,:/home/eckctl:" >> /etc/passwd
+RUN mkdir -p /home/eckctl
 RUN chown eckctl: -R /home/eckctl
 
 COPY --from=go-builder /tmp/eckctl /usr/bin/
@@ -29,4 +30,4 @@ ENV PATH=${PATH}:/home/eckctl/.local/bin/
 
 USER 1000
 
-ENTRYPOINT ["bash"]
+ENTRYPOINT [ "/bin/bash", "-l", "-c" ]
