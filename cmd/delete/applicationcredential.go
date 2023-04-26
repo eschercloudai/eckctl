@@ -26,7 +26,10 @@ func deleteApplicationCredentialCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVar(&applicationCredentialName, "name", "", "The name of the application credential to be deleted")
-	cmd.MarkFlagRequired("name")
+	err := cmd.MarkFlagRequired("name")
+	if err != nil {
+		log.Fatalln(err)
+	}
 	return cmd
 }
 

@@ -24,7 +24,10 @@ func deleteControlPlaneCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVar(&controlPlaneName, "name", "", "The name of the control plane to be deleted")
-	cmd.MarkFlagRequired("name")
+	err := cmd.MarkFlagRequired("name")
+	if err != nil {
+		log.Fatalln(err)
+	}
 	return cmd
 }
 
