@@ -30,6 +30,10 @@ var imagesCmd = &cobra.Command{
 	},
 }
 
+func printImageDetails(i generated.OpenstackImage) {
+	fmt.Printf("Name: %s\tUUID: %s\tCreated: %s\tKubernetes version: %s\tNVIDIA driver version: %s\n", i.Name, i.Id, i.Created, i.Versions.Kubernetes, i.Versions.NvidiaDriver)
+}
+
 func getImages(bearer string, url string) {
 
 	client := auth.InitClient(url)
@@ -54,24 +58,10 @@ func getImages(bearer string, url string) {
 	}
 	sort.Slice(images, func(j, k int) bool { return images[k].Created.After(images[j].Created) })
 
-	if imageName != "" {
-		for _, i := range images {
-			if i.Name == imageName {
-				fmt.Printf("Name: %s\t", i.Name)
-				fmt.Printf("UUID: %s\t", i.Id)
-				fmt.Printf("Created: %s\t", i.Created)
-				fmt.Printf("Kubernetes version: %s\t", i.Versions.Kubernetes)
-				fmt.Printf("NVIDIA driver version: %s \n", i.Versions.NvidiaDriver)
-			}
+	for _, i := range images {
+		if (imageId != "" && i.Id == imageId) || (imageName != "" && i.Name == imageName) || (imageId == "" && imageName == "") {
+			printImageDetails(i)
 		}
-	} else {
-		for _, i := range images {
-			fmt.Printf("Name: %s\t", i.Name)
-			fmt.Printf("UUID: %s\t", i.Id)
-			fmt.Printf("Created: %s\t", i.Created)
-			fmt.Printf("Kubernetes version: %s\t", i.Versions.Kubernetes)
-			fmt.Printf("NVIDIA driver version: %s \n", i.Versions.NvidiaDriver)
-		}
-
 	}
+
 }

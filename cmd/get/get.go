@@ -10,6 +10,7 @@ var (
 	controlPlaneName string
 	clusterName      string
 	imageName        string
+	imageId          string
 )
 
 type Images struct {
@@ -39,6 +40,7 @@ func NewGetCommand() *cobra.Command {
 	getCmd.AddCommand(commands...)
 
 	imagesCmd.Flags().StringVar(&imageName, "name", "", "Name of image")
+	imagesCmd.Flags().StringVar(&imageId, "id", "", "ID of image")
 	clustersCmd.Flags().StringVar(&controlPlaneName, "controlplane", "", "Name of control plane")
 	err := clustersCmd.MarkFlagRequired("controlplane")
 	if err != nil {
