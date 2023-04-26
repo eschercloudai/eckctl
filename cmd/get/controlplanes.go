@@ -31,6 +31,10 @@ func controlPlaneCmd() *cobra.Command {
 	return cmd
 }
 
+func printControlPlaneDetails(i generated.ControlPlane) {
+	fmt.Printf("Name: %s\tStatus: %s\tVersion: %s\n", i.Name, i.Status.Status, i.ApplicationBundle.Version)
+}
+
 func getControlPlanes(bearer string, url string) {
 	client := auth.InitClient(url)
 
@@ -53,19 +57,9 @@ func getControlPlanes(bearer string, url string) {
 		log.Fatal(err)
 	}
 
-	if controlPlaneName != "" {
-		for _, i := range controlPlanes {
-			if i.Name == controlPlaneName {
-				fmt.Printf("Name: %s\t", i.Name)
-				fmt.Printf("Status: %s\t", i.Status.Status)
-				fmt.Printf("Version: %s\n", i.ApplicationBundle.Version)
-			}
-		}
-	} else {
-		for _, i := range controlPlanes {
-			fmt.Printf("Name: %s\t", i.Name)
-			fmt.Printf("Status: %s\t", i.Status.Status)
-			fmt.Printf("Version: %s\n", i.ApplicationBundle.Version)
+	for _, i := range controlPlanes {
+		if (controlPlaneName != "" && i.Name == controlPlaneName) || (controlPlaneName == "") {
+			printControlPlaneDetails(i)
 		}
 	}
 }
