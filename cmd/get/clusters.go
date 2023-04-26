@@ -15,9 +15,9 @@ import (
 )
 
 var clustersCmd = &cobra.Command{
-	Use:   "clusters",
-	Short: "Get clusters",
-
+	Use:     "clusters",
+	Short:   "Get clusters",
+	Aliases: []string{"cluster"},
 	Run: func(cmd *cobra.Command, args []string) {
 		url := cmd.Flag("url").Value.String()
 		u := cmd.Flag("username").Value.String()
@@ -30,11 +30,11 @@ var clustersCmd = &cobra.Command{
 
 func printClusterDetails(i generated.KubernetesCluster) {
 	tree := treeprint.New()
-	fmt.Printf("Cluster: %s, status: %s", i.Name, i.Status.Status)
+	fmt.Printf("Cluster: %s, version: %s, status: %s", i.Name, i.ControlPlane.Version, i.Status.Status)
 	if i.WorkloadPools != nil {
 		pool := tree.AddBranch("Pools:")
 		for _, p := range i.WorkloadPools {
-			pool.AddNode(fmt.Sprintf("Name: %s\tFlavor: %s\tImage: %s\n", p.Name, p.Machine.FlavorName, p.Machine.ImageName))
+			pool.AddNode(fmt.Sprintf("Name: %s\tFlavor: %s\tImage: %s", p.Name, p.Machine.FlavorName, p.Machine.ImageName))
 		}
 		fmt.Println(tree.String())
 	}
@@ -65,7 +65,7 @@ func getClusters(bearer string, url string) {
 
 	for _, c := range clusters {
 		if clusterName == "" {
-			fmt.Printf("Name: %s\tStatus: %s\n", c.Name, c.Status.Status)
+			fmt.Printf("Name: %s\tVersion: %s\tStatus: %s\n", c.Name, c.ControlPlane.Version, c.Status.Status)
 		} else if c.Name == clusterName {
 			printClusterDetails(c)
 		}
