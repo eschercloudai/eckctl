@@ -52,10 +52,11 @@ func getProjects(bearer string, url string) {
 	}
 
 	for _, p := range projects {
-		fmt.Printf("Name: %s\tID: %s\t", p.Name, p.Id)
+		fmt.Printf("Name: %s\t", p.Name)
 		if p.Description != nil {
-			fmt.Printf("Description: %v\n", *p.Description)
+			fmt.Printf("Description: %v\t", *p.Description)
 		}
+		fmt.Printf("ID: %s\n", p.Id)
 	}
 
 }
