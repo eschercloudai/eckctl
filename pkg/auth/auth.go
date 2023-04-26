@@ -93,7 +93,6 @@ func GetToken(url string, username string, password string, project string) stri
 		log.Fatal(err)
 	}
 
-	fmt.Println(resp.StatusCode)
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("Unexpected response code: ", resp.StatusCode)
 		log.Fatal(err, resp.StatusCode)
