@@ -33,7 +33,7 @@ func getKubeConfig(bearer string, url string) {
 
 	resp, err := client.GetApiV1ControlplanesControlPlaneNameClustersClusterNameKubeconfig(ctx, controlPlaneName, clusterName, auth.SetAuthorizationHeader((bearer)))
 	if err != nil {
-		fmt.Println("Error retrieving clusters: ", err)
+		fmt.Println("Error retrieving kubeconfig: ", err)
 	}
 
 	body, err := io.ReadAll(resp.Body)

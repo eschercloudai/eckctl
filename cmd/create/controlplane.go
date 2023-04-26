@@ -50,6 +50,6 @@ func createControlPlane(bearer string, url string) {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Control Plane %s created\n", cp.Name)
+	fmt.Printf("Control Plane %s is being created\n", cp.Name)
 
 }
