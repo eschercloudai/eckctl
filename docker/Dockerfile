@@ -18,12 +18,8 @@ FROM alpine:3.17
 
 RUN apk update --no-cache
 RUN apk add bash build-base jq curl git
-    #python3 py3-pip openssh-client
-
-#RUN echo "ServerAliveInterval 120" >> /etc/ssh/ssh_config
 
 RUN echo "eckctl:x:1000:1000:Ecktl Non Root,,,:/home/eckctl:" >> /etc/passwd
-RUN mkdir -p /home/eckctl/.config/openstack/
 RUN chown eckctl: -R /home/eckctl
 
 COPY --from=go-builder /tmp/eckctl /usr/bin/
