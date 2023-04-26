@@ -16,8 +16,9 @@ import (
 
 // imagesCmd represents the images command
 var imagesCmd = &cobra.Command{
-	Use:   "images",
-	Short: "Get images",
+	Use:     "images",
+	Short:   "Get images",
+	Aliases: []string{"image"},
 
 	Run: func(cmd *cobra.Command, args []string) {
 		url := cmd.Flag("url").Value.String()
@@ -53,11 +54,24 @@ func getImages(bearer string, url string) {
 	}
 	sort.Slice(images, func(j, k int) bool { return images[k].Created.After(images[j].Created) })
 
-	for _, i := range images {
-		fmt.Printf("Name: %s\t", i.Name)
-		fmt.Printf("Created: %s\t", i.Created)
-		fmt.Printf("Kubernetes version: %s\t", i.Versions.Kubernetes)
-		fmt.Printf("NVIDIA driver version: %s \n", i.Versions.NvidiaDriver)
-	}
+	if imageName != "" {
+		for _, i := range images {
+			if i.Name == imageName {
+				fmt.Printf("Name: %s\t", i.Name)
+				fmt.Printf("UUID: %s\t", i.Id)
+				fmt.Printf("Created: %s\t", i.Created)
+				fmt.Printf("Kubernetes version: %s\t", i.Versions.Kubernetes)
+				fmt.Printf("NVIDIA driver version: %s \n", i.Versions.NvidiaDriver)
+			}
+		}
+	} else {
+		for _, i := range images {
+			fmt.Printf("Name: %s\t", i.Name)
+			fmt.Printf("UUID: %s\t", i.Id)
+			fmt.Printf("Created: %s\t", i.Created)
+			fmt.Printf("Kubernetes version: %s\t", i.Versions.Kubernetes)
+			fmt.Printf("NVIDIA driver version: %s \n", i.Versions.NvidiaDriver)
+		}
 
+	}
 }
