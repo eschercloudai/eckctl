@@ -52,8 +52,7 @@ func getProjects(bearer string, url string) {
 	}
 
 	for _, p := range projects {
-		fmt.Printf("ID: %s\n", p.Id)
-		fmt.Printf("Name: %s\n", p.Name)
+		fmt.Printf("Name: %s\tID: %s\t", p.Name, p.Id)
 		if p.Description != nil {
 			fmt.Printf("Description: %v\n", *p.Description)
 		}

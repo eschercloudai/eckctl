@@ -81,14 +81,12 @@ func getClusterBundles(bearer string, url string) []generated.ApplicationBundle 
 }
 
 func getVersions(b string, u string) {
-	fmt.Println("Cluster Bundles")
+	fmt.Println("Cluster Bundles:")
 	for _, i := range getClusterBundles(b, u) {
-		fmt.Printf("Name: %s", i.Name)
-		fmt.Printf(" Version: %s\n", i.Version)
+		fmt.Printf("Name: %s\tVersion: %s\n", i.Name, i.Version)
 	}
-	fmt.Println("Control Plane Bundles")
+	fmt.Println("Control Plane Bundles:")
 	for _, i := range getControlPlaneBundles(b, u) {
-		fmt.Printf("Name: %s", i.Name)
-		fmt.Printf(" Version: %s\n", i.Version)
+		fmt.Printf("Name: %s\tVersion: %s\n", i.Name, i.Version)
 	}
 }

@@ -50,7 +50,6 @@ func getNetworks(bearer string, url string) {
 	}
 
 	for _, i := range networks {
-		fmt.Printf("Name: %s", i.Name)
-		fmt.Printf(" ID: %s\n", i.Id)
+		fmt.Printf("Name: %s\tID: %s\n", i.Name, i.Id)
 	}
 }
