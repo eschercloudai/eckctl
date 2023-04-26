@@ -37,7 +37,14 @@ func createControlPlane(bearer string, url string) {
 	cp.ApplicationBundle.Name = "control-plane-" + controlPlaneVersion
 	cp.ApplicationBundle.Version = controlPlaneVersion
 
-	resp, err := client.PostApiV1Controlplanes(ctx, cp, auth.SetAuthorizationHeader(bearer))
+	// Create the Unikorn Project if it doesn't already exist, 409s are OK
+	resp, err := client.PostApiV1Project(ctx, auth.SetAuthorizationHeader(bearer))
+	if (resp.StatusCode != http.StatusConflict) && (resp.StatusCode != http.StatusAccepted) {
+		fmt.Println(resp.StatusCode)
+		log.Fatal(err)
+	}
+
+	resp, err = client.PostApiV1Controlplanes(ctx, cp, auth.SetAuthorizationHeader(bearer))
 	if resp.StatusCode != http.StatusAccepted {
 		fmt.Println(resp.StatusCode)
 		log.Fatal(err)
