@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/xlab/treeprint"
 )
 
 var clustersCmd = &cobra.Command{
@@ -25,6 +26,18 @@ var clustersCmd = &cobra.Command{
 		token := auth.GetToken(url, u, p, project)
 		getClusters(token, url)
 	},
+}
+
+func printClusterDetails(i generated.KubernetesCluster) {
+	tree := treeprint.New()
+	fmt.Printf("Cluster: %s, status: %s", i.Name, i.Status.Status)
+	if i.WorkloadPools != nil {
+		pool := tree.AddBranch("Pools:")
+		for _, p := range i.WorkloadPools {
+			pool.AddNode(fmt.Sprintf("Name: %s\tFlavor: %s\tImage: %s\n", p.Name, p.Machine.FlavorName, p.Machine.ImageName))
+		}
+		fmt.Println(tree.String())
+	}
 }
 
 func getClusters(bearer string, url string) {
@@ -51,8 +64,10 @@ func getClusters(bearer string, url string) {
 	}
 
 	for _, c := range clusters {
-		fmt.Printf("Name: %s\t", c.Name)
-		fmt.Printf("Status: %s\n", c.Status.Status)
+		if clusterName == "" {
+			fmt.Printf("Name: %s\tStatus: %s\n", c.Name, c.Status.Status)
+		} else if c.Name == clusterName {
+			printClusterDetails(c)
+		}
 	}
-
 }

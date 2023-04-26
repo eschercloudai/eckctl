@@ -42,6 +42,7 @@ func NewGetCommand() *cobra.Command {
 	imagesCmd.Flags().StringVar(&imageName, "name", "", "Name of image")
 	imagesCmd.Flags().StringVar(&imageId, "id", "", "ID of image")
 	clustersCmd.Flags().StringVar(&controlPlaneName, "controlplane", "", "Name of control plane")
+	clustersCmd.Flags().StringVar(&clusterName, "name", "", "Name of cluster")
 	err := clustersCmd.MarkFlagRequired("controlplane")
 	if err != nil {
 		log.Fatalln(err)
