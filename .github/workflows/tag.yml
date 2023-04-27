@@ -65,7 +65,6 @@ jobs:
     needs: security-checks
     strategy:
       matrix:
-        os: [linux, darwin]
         include:
           - os: linux
             arch: amd64
