@@ -34,7 +34,7 @@ func printClusterDetails(i generated.KubernetesCluster) {
 	if i.WorkloadPools != nil {
 		pools := tree.AddBranch("Pools:")
 		for _, p := range i.WorkloadPools {
-			pool := pools.AddBranch(fmt.Sprintf("Name: %s\tFlavor: %s\tImage: %s", p.Name, p.Machine.FlavorName, p.Machine.ImageName))
+			pool := pools.AddBranch(fmt.Sprintf("Name: %s\tFlavor: %s\tImage: %s\tReplicas: %v", p.Name, p.Machine.FlavorName, p.Machine.ImageName, p.Machine.Replicas))
 			if p.Autoscaling != nil {
 				pool.AddNode(fmt.Sprintf("Autoscaling: Minimum: %v, maximum: %v", p.Autoscaling.MinimumReplicas, p.Autoscaling.MaximumReplicas))
 			}
