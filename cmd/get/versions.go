@@ -82,12 +82,13 @@ func getClusterBundles(bearer string, url string) []generated.ApplicationBundle 
 
 func printBundle(bundle generated.ApplicationBundle) {
 	fmt.Printf("Name: %s\tVersion: %s", bundle.Name, bundle.Version)
-	if bundle.Preview != nil {
-		if *bundle.Preview {
-			fmt.Print("\tPreview: True\n")
-		}
+	if bundle.EndOfLife != nil {
+		fmt.Printf("\tEOL: %v", bundle.EndOfLife.Format(time.RFC822))
+	}
+	if bundle.Preview != nil && *bundle.Preview {
+		fmt.Print("\tPreview: True\n")
 	} else {
-		println()
+		fmt.Println()
 	}
 }
 
