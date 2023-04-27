@@ -63,6 +63,16 @@ jobs:
     name: Create Release
     runs-on: 'ubuntu-22.04'
     needs: security-checks
+    strategy:
+      matrix:
+        os: [linux, darwin]
+        include:
+          - os: linux
+            arch: amd64
+          - os: darwin
+            arch: arm64
+          - os: darwin
+            arch: amd64
     steps:
       - uses: actions/checkout@v3
         with:
@@ -72,8 +82,8 @@ jobs:
           go-version: '1.19.2'
       - name: Get OS and arch info
         run: |
-          GOARCH=amd64
-          GOOS=linux
+          GOARCH=${{matrix.arch}}
+          GOOS=${{matrix.os}}
           BINARY_NAME=${{github.repository}}-$GOOS-$GOARCH
           echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
           echo "GOOS=$GOOS" >> $GITHUB_ENV
