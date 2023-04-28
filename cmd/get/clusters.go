@@ -20,7 +20,8 @@ var (
 		Short:   "Get clusters",
 		Aliases: []string{"cluster"},
 		Run: func(cmd *cobra.Command, args []string) {
-			url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(), cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
+			url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
+				cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
 			token = auth.GetToken(url, u, p, project)
 			printClusters()
 		},
@@ -77,10 +78,12 @@ func printClusters() {
 				printClusterDetails(c.Name, s)
 			}
 		}
-	} else {
+	} else if controlPlaneName != "" {
 		clusters = getClusters(controlPlaneName)
 		for _, c := range clusters {
 			printClusterDetails(controlPlaneName, c)
 		}
+	} else {
+		log.Fatal("Error: Either --controlplane or --all must be specified")
 	}
 }

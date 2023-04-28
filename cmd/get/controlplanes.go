@@ -19,7 +19,8 @@ func controlPlaneCmd() *cobra.Command {
 		Aliases: []string{"control-planes", "controlplane", "control-plane", "cp"},
 		Short:   "Get control planes",
 		Run: func(cmd *cobra.Command, args []string) {
-			url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(), cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
+			url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
+				cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
 			project = cmd.Flag("project").Value.String()
 			token = auth.GetToken(url, u, p, project)
 			printControlPlanes()
