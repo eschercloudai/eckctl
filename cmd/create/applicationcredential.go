@@ -18,16 +18,14 @@ var createApplicationCredentialCmd = &cobra.Command{
 	Use:   "applicationcredential",
 	Short: "Create an application credential",
 	Run: func(cmd *cobra.Command, args []string) {
-		url := cmd.Flag("url").Value.String()
-		u := cmd.Flag("username").Value.String()
-		p := cmd.Flag("password").Value.String()
-		project := cmd.Flag("project").Value.String()
-		token := auth.GetToken(url, u, p, project)
-		createApplicationCredential(token, url)
+		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
+			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
+		token = auth.GetToken(url, u, p, project)
+		createApplicationCredential()
 	},
 }
 
-func createApplicationCredential(bearer string, url string) ApplicationCredential {
+func createApplicationCredential() ApplicationCredential {
 	client := auth.InitClient(url)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -36,7 +34,7 @@ func createApplicationCredential(bearer string, url string) ApplicationCredentia
 
 	aco.Name = controlPlaneName + "-" + clusterName
 
-	resp, err := client.PostApiV1ProvidersOpenstackApplicationCredentials(ctx, *aco, auth.SetAuthorizationHeader(bearer))
+	resp, err := client.PostApiV1ProvidersOpenstackApplicationCredentials(ctx, *aco, auth.SetAuthorizationHeader(token))
 	if err != nil {
 		log.Fatal(err)
 	}

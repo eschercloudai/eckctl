@@ -19,12 +19,10 @@ var createClusterCmd = &cobra.Command{
 	Use:   "cluster",
 	Short: "Create an ECK-managed cluster from a JSON definition",
 	Run: func(cmd *cobra.Command, args []string) {
-		url := cmd.Flag("url").Value.String()
-		u := cmd.Flag("username").Value.String()
-		p := cmd.Flag("password").Value.String()
-		project := cmd.Flag("project").Value.String()
-		token := auth.GetToken(url, u, p, project)
-		createCluster(token, url)
+		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
+			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
+		token = auth.GetToken(url, u, p, project)
+		createCluster()
 	},
 }
 
@@ -42,7 +40,7 @@ func readClusterDefs(filePath string) (generated.KubernetesCluster, error) {
 	return clusters, err
 }
 
-func createCluster(bearer string, url string) {
+func createCluster() {
 	client := auth.InitClient(url)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -53,7 +51,7 @@ func createCluster(bearer string, url string) {
 		log.Fatal(err)
 	}
 
-	ac := createApplicationCredential(bearer, url)
+	ac := createApplicationCredential()
 
 	cluster.Name = clusterName
 	cluster.Openstack.ApplicationCredentialID = ac.Id
@@ -71,7 +69,7 @@ func createCluster(bearer string, url string) {
 
 	fmt.Println(string(pretty.Color(pretty.PrettyOptions(clusterJson, opts), nil)))
 
-	resp, err := client.PostApiV1ControlplanesControlPlaneNameClusters(ctx, controlPlaneName, cluster, auth.SetAuthorizationHeader((bearer)))
+	resp, err := client.PostApiV1ControlplanesControlPlaneNameClusters(ctx, controlPlaneName, cluster, auth.SetAuthorizationHeader((token)))
 	if resp.StatusCode != http.StatusAccepted {
 		log.Fatal(err)
 	}

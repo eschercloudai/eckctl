@@ -70,7 +70,6 @@ func getClusters(controlplane string) []generated.KubernetesCluster {
 }
 
 func printClusters() {
-	var clusters = []generated.KubernetesCluster{}
 	if allFlag {
 		controlPlanes := getControlPlanes()
 		for _, c := range controlPlanes {
@@ -79,7 +78,7 @@ func printClusters() {
 			}
 		}
 	} else if controlPlaneName != "" {
-		clusters = getClusters(controlPlaneName)
+		clusters := getClusters(controlPlaneName)
 		for _, c := range clusters {
 			printClusterDetails(controlPlaneName, c)
 		}
