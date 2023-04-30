@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -23,7 +24,10 @@ var (
 			url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 				cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
 			token = auth.GetToken(url, u, p, project)
-			printClusters()
+			err := printClusters()
+			if err != nil {
+				log.Fatalf("Error getting clusters: %s", err)
+			}
 		},
 	}
 )
@@ -43,7 +47,7 @@ func printClusterDetails(controlPlane string, i generated.KubernetesCluster) {
 	}
 }
 
-func getClusters(controlplane string) []generated.KubernetesCluster {
+func getClusters(controlplane string) (clusters []generated.KubernetesCluster, err error) {
 
 	client := auth.InitClient(url)
 
@@ -52,37 +56,65 @@ func getClusters(controlplane string) []generated.KubernetesCluster {
 
 	resp, err := client.GetApiV1ControlplanesControlPlaneNameClusters(ctx, controlplane, auth.SetAuthorizationHeader((token)))
 	if err != nil {
-		fmt.Println("Error retrieving clusters: ", err)
+		return
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
-	clusters := generated.KubernetesClusters{}
+	if resp.StatusCode != http.StatusOK {
+		switch resp.StatusCode {
+		case http.StatusNotFound:
+			err = fmt.Errorf("Control plane not found, %v", resp.StatusCode)
+		case http.StatusInternalServerError:
+			err = fmt.Errorf("Server error, %v", resp.StatusCode)
+		default:
+			err = fmt.Errorf("Error retrieving cluster information, %v", resp.StatusCode)
+		}
+		return
+	}
+
+	clusters = generated.KubernetesClusters{}
 	err = json.Unmarshal(body, &clusters)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
-	return clusters
+	return
 }
 
-func printClusters() {
+func printClusters() (err error) {
+	controlPlanes, err := getControlPlanes()
+	if err != nil {
+		return err
+	}
 	if allFlag {
-		controlPlanes := getControlPlanes()
+		if err != nil {
+			return
+		}
 		for _, c := range controlPlanes {
-			for _, s := range getClusters(c.Name) {
+			clusters, err := getClusters(c.Name)
+			if err != nil {
+				return err
+			}
+			for _, s := range clusters {
 				printClusterDetails(c.Name, s)
 			}
 		}
 	} else if controlPlaneName != "" {
-		clusters := getClusters(controlPlaneName)
+		clusters, err := getClusters(controlPlaneName)
+		if err != nil {
+			return err
+		}
 		for _, c := range clusters {
 			printClusterDetails(controlPlaneName, c)
 		}
 	} else {
 		log.Fatal("Error: Either --controlplane or --all must be specified")
+		return err
 	}
+
+	return
 }

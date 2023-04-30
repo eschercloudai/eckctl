@@ -39,12 +39,9 @@ func NewRootCommand() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   "eckctl",
 		Short: "A CLI for working with the EscherCloud Kubernetes (ECK) Service",
+		Long:  "eckctl - manage Kubernetes clusters via the EscherCloudAI Kubernetes Service",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			return initializeConfig(cmd)
-		},
-		Run: func(cmd *cobra.Command, args []string) {
-			out := cmd.OutOrStdout()
-			fmt.Fprintln(out, "Username is: ", username)
 		},
 	}
 

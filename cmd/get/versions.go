@@ -21,11 +21,14 @@ var versionsCmd = &cobra.Command{
 		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
 		token = auth.GetToken(url, u, p, project)
-		getVersions()
+		err := getVersions()
+		if err != nil {
+			log.Fatalf("Error retrieving versions: %s", err)
+		}
 	},
 }
 
-func getControlPlaneBundles() []generated.ApplicationBundle {
+func getControlPlaneBundles() (versions []generated.ApplicationBundle, err error) {
 
 	client := auth.InitClient(url)
 
@@ -34,24 +37,24 @@ func getControlPlaneBundles() []generated.ApplicationBundle {
 
 	resp, err := client.GetApiV1ApplicationBundlesControlPlane(ctx, auth.SetAuthorizationHeader(token))
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
-	versions := generated.ApplicationBundles{}
+	versions = generated.ApplicationBundles{}
 	err = json.Unmarshal(body, &versions)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
-	return versions
+	return
 }
 
-func getClusterBundles() []generated.ApplicationBundle {
+func getClusterBundles() (versions []generated.ApplicationBundle, err error) {
 
 	client := auth.InitClient(url)
 
@@ -63,19 +66,19 @@ func getClusterBundles() []generated.ApplicationBundle {
 		log.Fatal(err)
 	}
 
-	versions := generated.ApplicationBundles{}
+	versions = generated.ApplicationBundles{}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	err = json.Unmarshal(body, &versions)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
-	return versions
+	return
 }
 
 func printBundle(bundle generated.ApplicationBundle) {
@@ -90,13 +93,22 @@ func printBundle(bundle generated.ApplicationBundle) {
 	}
 }
 
-func getVersions() {
+func getVersions() (err error) {
 	fmt.Println("Cluster Bundles:")
-	for _, i := range getClusterBundles() {
+	clusterBundles, err := getClusterBundles()
+	if err != nil {
+		return
+	}
+	for _, i := range clusterBundles {
 		printBundle(i)
+	}
+	controlPlaneBundles, err := getControlPlaneBundles()
+	if err != nil {
+		return
 	}
 	fmt.Println("Control Plane Bundles:")
-	for _, i := range getControlPlaneBundles() {
+	for _, i := range controlPlaneBundles {
 		printBundle(i)
 	}
+	return err
 }
