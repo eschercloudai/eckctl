@@ -5,8 +5,7 @@ import (
 )
 
 var (
-	clusterName      string
-	controlPlaneName string
+	url, token, u, p, project string
 )
 
 func NewDeleteCommand() *cobra.Command {
@@ -21,6 +20,5 @@ func NewDeleteCommand() *cobra.Command {
 	}
 
 	deleteCmd.AddCommand(commands...)
-
 	return deleteCmd
 }

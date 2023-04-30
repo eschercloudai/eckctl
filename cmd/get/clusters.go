@@ -14,23 +14,23 @@ import (
 	"github.com/xlab/treeprint"
 )
 
-var clustersCmd = &cobra.Command{
-	Use:     "clusters",
-	Short:   "Get clusters",
-	Aliases: []string{"cluster"},
-	Run: func(cmd *cobra.Command, args []string) {
-		url := cmd.Flag("url").Value.String()
-		u := cmd.Flag("username").Value.String()
-		p := cmd.Flag("password").Value.String()
-		project := cmd.Flag("project").Value.String()
-		token := auth.GetToken(url, u, p, project)
-		getClusters(token, url)
-	},
-}
+var (
+	clustersCmd = &cobra.Command{
+		Use:     "clusters",
+		Short:   "Get clusters",
+		Aliases: []string{"cluster"},
+		Run: func(cmd *cobra.Command, args []string) {
+			url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
+				cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
+			token = auth.GetToken(url, u, p, project)
+			printClusters()
+		},
+	}
+)
 
-func printClusterDetails(i generated.KubernetesCluster) {
+func printClusterDetails(controlPlane string, i generated.KubernetesCluster) {
 	tree := treeprint.New()
-	fmt.Printf("Cluster: %s, version: %s, status: %s", i.Name, i.ControlPlane.Version, i.Status.Status)
+	fmt.Printf("Cluster: %s, version: %s, control plane: %s, status: %s", i.Name, i.ControlPlane.Version, controlPlane, i.Status.Status)
 	if i.WorkloadPools != nil {
 		pools := tree.AddBranch("Pools:")
 		for _, p := range i.WorkloadPools {
@@ -43,14 +43,14 @@ func printClusterDetails(i generated.KubernetesCluster) {
 	}
 }
 
-func getClusters(bearer string, url string) {
+func getClusters(controlplane string) []generated.KubernetesCluster {
 
 	client := auth.InitClient(url)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := client.GetApiV1ControlplanesControlPlaneNameClusters(ctx, controlPlaneName, auth.SetAuthorizationHeader((bearer)))
+	resp, err := client.GetApiV1ControlplanesControlPlaneNameClusters(ctx, controlplane, auth.SetAuthorizationHeader((token)))
 	if err != nil {
 		fmt.Println("Error retrieving clusters: ", err)
 	}
@@ -66,11 +66,23 @@ func getClusters(bearer string, url string) {
 		log.Fatal(err)
 	}
 
-	for _, c := range clusters {
-		if clusterName == "" {
-			fmt.Printf("Name: %s\tVersion: %s\tStatus: %s\n", c.Name, c.ControlPlane.Version, c.Status.Status)
-		} else if c.Name == clusterName {
-			printClusterDetails(c)
+	return clusters
+}
+
+func printClusters() {
+	if allFlag {
+		controlPlanes := getControlPlanes()
+		for _, c := range controlPlanes {
+			for _, s := range getClusters(c.Name) {
+				printClusterDetails(c.Name, s)
+			}
 		}
+	} else if controlPlaneName != "" {
+		clusters := getClusters(controlPlaneName)
+		for _, c := range clusters {
+			printClusterDetails(controlPlaneName, c)
+		}
+	} else {
+		log.Fatal("Error: Either --controlplane or --all must be specified")
 	}
 }

@@ -18,23 +18,21 @@ var versionsCmd = &cobra.Command{
 	Short: "Get versions (application bundles)",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		url := cmd.Flag("url").Value.String()
-		u := cmd.Flag("username").Value.String()
-		p := cmd.Flag("password").Value.String()
-		project := cmd.Flag("project").Value.String()
-		token := auth.GetToken(url, u, p, project)
-		getVersions(token, url)
+		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
+			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
+		token = auth.GetToken(url, u, p, project)
+		getVersions()
 	},
 }
 
-func getControlPlaneBundles(bearer string, url string) []generated.ApplicationBundle {
+func getControlPlaneBundles() []generated.ApplicationBundle {
 
 	client := auth.InitClient(url)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := client.GetApiV1ApplicationBundlesControlPlane(ctx, auth.SetAuthorizationHeader(bearer))
+	resp, err := client.GetApiV1ApplicationBundlesControlPlane(ctx, auth.SetAuthorizationHeader(token))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,14 +51,14 @@ func getControlPlaneBundles(bearer string, url string) []generated.ApplicationBu
 	return versions
 }
 
-func getClusterBundles(bearer string, url string) []generated.ApplicationBundle {
+func getClusterBundles() []generated.ApplicationBundle {
 
 	client := auth.InitClient(url)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := client.GetApiV1ApplicationBundlesCluster(ctx, auth.SetAuthorizationHeader(bearer))
+	resp, err := client.GetApiV1ApplicationBundlesCluster(ctx, auth.SetAuthorizationHeader(token))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -92,13 +90,13 @@ func printBundle(bundle generated.ApplicationBundle) {
 	}
 }
 
-func getVersions(b string, u string) {
+func getVersions() {
 	fmt.Println("Cluster Bundles:")
-	for _, i := range getClusterBundles(b, u) {
+	for _, i := range getClusterBundles() {
 		printBundle(i)
 	}
 	fmt.Println("Control Plane Bundles:")
-	for _, i := range getControlPlaneBundles(b, u) {
+	for _, i := range getControlPlaneBundles() {
 		printBundle(i)
 	}
 }

@@ -20,8 +20,8 @@
     },
     "controlPlane": {
         "replicas": 1,
-        "version": "v1.26.1",
-        "imageName": "eck-230408-3464bc03",
+        "version": "v1.26.3",
+        "imageName": "eck-230414-cc034e2d",
         "flavorName": "g.2.standard",
         "disk": {
             "size": 50
@@ -32,8 +32,8 @@
             "name": "worker",
             "machine": {
                 "replicas": 1,
-                "version": "v1.26.1",
-                "imageName": "eck-230408-3464bc03",
+                "version": "v1.26.3",
+                "imageName": "eck-230414-cc034e2d",
                 "flavorName": "g.2.standard",
                 "disk": {
                     "size": 50
