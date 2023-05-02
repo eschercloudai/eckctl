@@ -34,7 +34,6 @@ func NewCreateCommand() *cobra.Command {
 
 	createCmd.AddCommand(commands...)
 
-	createApplicationCredentialCmd.Flags().StringVar(&controlPlaneName, "controlplane", "", "Name of associated control plane")
 	createApplicationCredentialCmd.Flags().StringVar(&applicationCredentialName, "name", "", "Name of application credential")
 	err := createApplicationCredentialCmd.MarkFlagRequired("name")
 	if err != nil {

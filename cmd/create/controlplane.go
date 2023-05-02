@@ -19,11 +19,14 @@ var createControlPlaneCmd = &cobra.Command{
 		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
 		token = auth.GetToken(url, u, p, project)
-		createControlPlane()
+		err := createControlPlane()
+		if err != nil {
+			log.Fatalf("Error creating control plane: %s", err)
+		}
 	},
 }
 
-func createControlPlane() {
+func createControlPlane() (err error) {
 	client := auth.InitClient(url)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -38,16 +41,17 @@ func createControlPlane() {
 	// Create the Unikorn Project if it doesn't already exist, 409s are OK
 	resp, err := client.PostApiV1Project(ctx, auth.SetAuthorizationHeader(token))
 	if (resp.StatusCode != http.StatusConflict) && (resp.StatusCode != http.StatusAccepted) {
-		fmt.Println(resp.StatusCode)
-		log.Fatal(err)
+		err = fmt.Errorf("Error creating project, response code: %v", resp.StatusCode)
+		return
 	}
 
 	resp, err = client.PostApiV1Controlplanes(ctx, cp, auth.SetAuthorizationHeader(token))
 	if resp.StatusCode != http.StatusAccepted {
-		fmt.Println(resp.StatusCode)
-		log.Fatal(err)
+		err = fmt.Errorf("Error creating project, response code: %v", resp.StatusCode)
+		return
 	}
 
 	fmt.Printf("Control Plane %s is being created\n", cp.Name)
 
+	return
 }
