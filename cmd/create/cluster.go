@@ -6,6 +6,7 @@ import (
 	"eckctl/pkg/generated"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -21,7 +22,10 @@ var createClusterCmd = &cobra.Command{
 		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
 		token = auth.GetToken(url, u, p, project)
-		createCluster()
+		err := createCluster()
+		if err != nil {
+			log.Fatalf("Error creating cluster: %s", err)
+		}
 	},
 }
 

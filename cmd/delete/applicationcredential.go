@@ -3,6 +3,7 @@ package delete
 import (
 	"context"
 	"eckctl/pkg/auth"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -20,7 +21,10 @@ func deleteApplicationCredentialCmd() *cobra.Command {
 			url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 				cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
 			token = auth.GetToken(url, u, p, project)
-			deleteApplicationCredential()
+			err := deleteApplicationCredential()
+			if err != nil {
+				log.Fatalf("Error deleting Application Credential: %s", err)
+			}
 		},
 	}
 	cmd.Flags().StringVar(&applicationCredentialName, "name", "", "The name of the application credential to be deleted")
@@ -31,7 +35,7 @@ func deleteApplicationCredentialCmd() *cobra.Command {
 	return cmd
 }
 
-func deleteApplicationCredential() {
+func deleteApplicationCredential() (err error) {
 	client := auth.InitClient(url)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -40,10 +44,13 @@ func deleteApplicationCredential() {
 	resp, err := client.DeleteApiV1ProvidersOpenstackApplicationCredentialsApplicationCredential(ctx, applicationCredentialName, auth.SetAuthorizationHeader(token))
 
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Error deleting application credential %s, %v", applicationCredentialName, resp.StatusCode)
+		err = fmt.Errorf("Unexpectde response code: %v", resp.StatusCode)
+		return
 	}
+
+	return
 }

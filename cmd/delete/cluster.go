@@ -24,7 +24,10 @@ func deleteClusterCmd() *cobra.Command {
 			url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 				cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
 			token = auth.GetToken(url, u, p, project)
-			deleteCluster(clusterName, controlPlaneName)
+			err := deleteCluster()
+			if err != nil {
+				log.Fatalf("Error deleting cluster: %s", err)
+			}
 		},
 	}
 	cmd.Flags().StringVar(&clusterName, "name", "", "The name of the cluster to be deleted")
@@ -32,7 +35,7 @@ func deleteClusterCmd() *cobra.Command {
 	return cmd
 }
 
-func deleteCluster(clusterName string, controlPlaneName string) {
+func deleteCluster() (err error) {
 	client := auth.InitClient(url)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -40,11 +43,13 @@ func deleteCluster(clusterName string, controlPlaneName string) {
 
 	resp, err := client.DeleteApiV1ControlplanesControlPlaneNameClustersClusterName(ctx, controlPlaneName, clusterName, auth.SetAuthorizationHeader(token))
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 	if resp.StatusCode != http.StatusAccepted {
-		log.Fatalf("Error deleting cluster %s from control plane %s, %v", clusterName, controlPlaneName, resp.StatusCode)
+		err = fmt.Errorf("Unpexected response code: %v", resp.StatusCode)
 	}
 
 	fmt.Printf("Deleting cluster %s from controlplane %s\n", clusterName, controlPlaneName)
+
+	return
 }

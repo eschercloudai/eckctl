@@ -47,7 +47,7 @@ func createControlPlane() (err error) {
 
 	resp, err = client.PostApiV1Controlplanes(ctx, cp, auth.SetAuthorizationHeader(token))
 	if resp.StatusCode != http.StatusAccepted {
-		err = fmt.Errorf("Error creating project, response code: %v", resp.StatusCode)
+		err = fmt.Errorf("Unexpected response code: %v", resp.StatusCode)
 		return
 	}
 
