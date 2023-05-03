@@ -21,11 +21,14 @@ var projectsCmd = &cobra.Command{
 		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
 		token = auth.GetToken(url, u, p, project)
-		getProjects()
+		err := getProjects()
+		if err != nil {
+			log.Fatalf("Error retrieving projects: %s", err)
+		}
 	},
 }
 
-func getProjects() {
+func getProjects() (err error) {
 
 	client := auth.InitClient(url)
 
@@ -34,19 +37,19 @@ func getProjects() {
 
 	resp, err := client.GetApiV1ProvidersOpenstackProjects(ctx, auth.SetAuthorizationHeader(token))
 	if err != nil {
-		fmt.Println("Error getting projects: ", err)
+		return
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
-
+		
 	projects := generated.OpenstackProjects{}
 
 	err = json.Unmarshal(body, &projects)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	for _, p := range projects {
@@ -56,5 +59,7 @@ func getProjects() {
 		}
 		fmt.Printf("ID: %s\n", p.Id)
 	}
+
+	return
 
 }

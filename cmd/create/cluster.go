@@ -22,25 +22,27 @@ var createClusterCmd = &cobra.Command{
 		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
 		token = auth.GetToken(url, u, p, project)
-		createCluster()
+		err := createCluster()
+		if err != nil {
+			log.Fatalf("Error creating cluster: %s", err)
+		}
 	},
 }
 
-func readClusterDefs(filePath string) (generated.KubernetesCluster, error) {
-	var clusters generated.KubernetesCluster
+func readClusterDefs(filePath string) (cluster generated.KubernetesCluster, err error) {
 	bytes, err := os.ReadFile(filePath)
 	if err != nil {
-		return clusters, fmt.Errorf("error opening file: %w", err)
+		return
 	}
 
-	err = json.Unmarshal(bytes, &clusters)
+	err = json.Unmarshal(bytes, &cluster)
 	if err != nil {
-		return clusters, fmt.Errorf("error unmarshalling JSON: %w", err)
+		return
 	}
-	return clusters, err
+	return
 }
 
-func createCluster() {
+func createCluster() (err error) {
 	client := auth.InitClient(url)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -48,10 +50,13 @@ func createCluster() {
 
 	cluster, err := readClusterDefs(clusterDefPath)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
-	ac := createApplicationCredential()
+	ac, err := createApplicationCredential(controlPlaneName + "-" + clusterName)
+	if err != nil {
+		return
+	}
 
 	cluster.Name = clusterName
 	cluster.Openstack.ApplicationCredentialID = ac.Id
@@ -61,7 +66,7 @@ func createCluster() {
 
 	clusterJson, err := json.Marshal(cluster)
 	if err != nil {
-		fmt.Println("Error marshalling JSON object")
+		return
 	}
 
 	opts := pretty.DefaultOptions
@@ -71,6 +76,8 @@ func createCluster() {
 
 	resp, err := client.PostApiV1ControlplanesControlPlaneNameClusters(ctx, controlPlaneName, cluster, auth.SetAuthorizationHeader((token)))
 	if resp.StatusCode != http.StatusAccepted {
-		log.Fatal(err)
+		err = fmt.Errorf("Error submitting cluster definition, %v", resp.StatusCode)
+		return
 	}
+	return
 }

@@ -24,7 +24,10 @@ var imagesCmd = &cobra.Command{
 		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
 		token = auth.GetToken(url, u, p, project)
-		getImages()
+		err := getImages()
+		if err != nil {
+			log.Fatalf("Error retrieving images: %s", err)
+		}
 	},
 }
 
@@ -32,7 +35,7 @@ func printImageDetails(i generated.OpenstackImage) {
 	fmt.Printf("Name: %s\tUUID: %s\tCreated: %s\tKubernetes version: %s\tNVIDIA driver version: %s\n", i.Name, i.Id, i.Created, i.Versions.Kubernetes, i.Versions.NvidiaDriver)
 }
 
-func getImages() {
+func getImages() (err error) {
 
 	client := auth.InitClient(url)
 
@@ -41,18 +44,18 @@ func getImages() {
 
 	resp, err := client.GetApiV1ProvidersOpenstackImages(ctx, auth.SetAuthorizationHeader(token))
 	if err != nil {
-		fmt.Println("Error getting images: ", err)
+		return
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	images := []generated.OpenstackImage{}
 	err = json.Unmarshal(body, &images)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 	sort.Slice(images, func(j, k int) bool { return images[k].Created.After(images[j].Created) })
 
@@ -61,5 +64,7 @@ func getImages() {
 			printImageDetails(i)
 		}
 	}
+
+	return
 
 }

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -23,7 +24,10 @@ func controlPlaneCmd() *cobra.Command {
 				cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
 			project = cmd.Flag("project").Value.String()
 			token = auth.GetToken(url, u, p, project)
-			printControlPlanes()
+			err := printControlPlanes()
+			if err != nil {
+				log.Fatalf("Error retrieving control planes: %s", err)
+			}
 		},
 	}
 	cmd.Flags().StringVar(&controlPlaneName, "name", "", "The name of the control plane to list")
@@ -34,7 +38,7 @@ func printControlPlaneDetails(i generated.ControlPlane) {
 	fmt.Printf("Name: %s\tStatus: %s\tVersion: %s\n", i.Name, i.Status.Status, i.ApplicationBundle.Version)
 }
 
-func getControlPlanes() []generated.ControlPlane {
+func getControlPlanes() (controlPlanes []generated.ControlPlane, err error) {
 	client := auth.InitClient(url)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -42,27 +46,37 @@ func getControlPlanes() []generated.ControlPlane {
 
 	resp, err := client.GetApiV1Controlplanes(ctx, auth.SetAuthorizationHeader(token))
 	if err != nil {
-		log.Fatal(err)
+		return
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		err = fmt.Errorf("Error retrieving control plane information, %v", resp.StatusCode)
+		return
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
-	controlPlanes := generated.ControlPlanes{}
+	controlPlanes = generated.ControlPlanes{}
 	err = json.Unmarshal(body, &controlPlanes)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
-	return controlPlanes
+	return
 }
 
-func printControlPlanes() {
-	for _, i := range getControlPlanes() {
+func printControlPlanes() (err error) {
+	cps, err := getControlPlanes()
+	if err != nil {
+		return
+	}
+	for _, i := range cps {
 		if (controlPlaneName != "" && i.Name == controlPlaneName) || (controlPlaneName == "") {
 			printControlPlaneDetails(i)
 		}
 	}
+	return
 }

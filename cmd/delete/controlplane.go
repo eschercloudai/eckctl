@@ -3,6 +3,7 @@ package delete
 import (
 	"context"
 	"eckctl/pkg/auth"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -18,7 +19,10 @@ func deleteControlPlaneCmd() *cobra.Command {
 			url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 				cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
 			token = auth.GetToken(url, u, p, project)
-			deleteControlPlane()
+			err := deleteControlPlane()
+			if err != nil {
+				log.Fatalf("Error deleting Control Plane: %s", err)
+			}
 		},
 	}
 	cmd.Flags().StringVar(&controlPlaneName, "name", "", "The name of the control plane to be deleted")
@@ -29,7 +33,7 @@ func deleteControlPlaneCmd() *cobra.Command {
 	return cmd
 }
 
-func deleteControlPlane() {
+func deleteControlPlane() (err error) {
 
 	client := auth.InitClient(url)
 
@@ -38,10 +42,13 @@ func deleteControlPlane() {
 
 	resp, err := client.DeleteApiV1ControlplanesControlPlaneName(ctx, controlPlaneName, auth.SetAuthorizationHeader(token))
 	if err != nil {
-		log.Fatal(resp, err)
+		return
 	}
 
 	if resp.StatusCode != http.StatusAccepted {
-		log.Fatalf("Error deleting control plane %s, %v", controlPlaneName, resp.StatusCode)
+		err = fmt.Errorf("Unexpected response code: %v", resp.StatusCode)
+		return
 	}
+
+	return
 }

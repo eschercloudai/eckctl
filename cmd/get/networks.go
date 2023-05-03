@@ -21,11 +21,14 @@ var networksCmd = &cobra.Command{
 		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
 		token = auth.GetToken(url, u, p, project)
-		getNetworks()
+		err := getNetworks()
+		if err != nil {
+			log.Fatalf("Error getting networks, %s", err)
+		}
 	},
 }
 
-func getNetworks() {
+func getNetworks() (err error) {
 
 	client := auth.InitClient(url)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -33,21 +36,23 @@ func getNetworks() {
 
 	resp, err := client.GetApiV1ProvidersOpenstackExternalNetworks(ctx, auth.SetAuthorizationHeader(token))
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	networks := generated.OpenstackExternalNetworks{}
 	err = json.Unmarshal(body, &networks)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	for _, i := range networks {
 		fmt.Printf("Name: %s\tID: %s\n", i.Name, i.Id)
 	}
+
+	return 
 }
