@@ -31,21 +31,21 @@ func SetAuthorizationHeader(token string) generated.RequestEditorFn {
 	}
 }
 
-func InitClient(url string) *generated.Client {
+func InitClient(url string) (client *generated.Client, err error) {
 	customHTTPClient := &http.Client{
 		Timeout: 10 * time.Second,
 	}
 
-	client, err := generated.NewClient(url, generated.WithHTTPClient(customHTTPClient))
+	client, err = generated.NewClient(url, generated.WithHTTPClient(customHTTPClient))
 	if err != nil {
-		log.Fatal()
+		return
 	}
 
-	return client
+	return
 }
 
-func getBearer(url string, t string, p string) string {
-	client := InitClient(url)
+func getBearer(url string, t string, p string) (bearer string, err error) {
+	client, err := InitClient(url)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -61,8 +61,8 @@ func getBearer(url string, t string, p string) string {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println("Unexpected response code: ", resp.StatusCode)
-		log.Fatal(err, resp.StatusCode)
+		err := fmt.Errorf("Unexpected response when obtaining bearer token: %v", resp.StatusCode)
+		return "", err
 	}
 
 	body, err := io.ReadAll(resp.Body)
@@ -77,11 +77,14 @@ func getBearer(url string, t string, p string) string {
 		log.Fatal(err)
 	}
 
-	return b.Token
+	return b.Token, err
 }
 
-func GetToken(url string, username string, password string, project string) string {
-	client := InitClient(url)
+func GetToken(url string, username string, password string, project string) (token string, err error) {
+	client, err := InitClient(url)
+	if err != nil {
+		return
+	}
 
 	auth := base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
 
@@ -90,24 +93,27 @@ func GetToken(url string, username string, password string, project string) stri
 
 	resp, err := client.PostApiV1AuthTokensPassword(ctx, SetAuthorizationHeader(auth))
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println("Unexpected response code: ", resp.StatusCode)
-		log.Fatal(err, resp.StatusCode)
+		log.Fatalf("Unexpected response code when authenticating: %s %v", err, resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	t := generated.Token{}
 	err = json.Unmarshal(body, &t)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
-	return getBearer(url, t.Token, project)
+	token, err = getBearer(url, t.Token, project)
+	if err != nil {
+		return
+	}
+	return
 }

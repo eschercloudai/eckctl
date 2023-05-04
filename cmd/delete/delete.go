@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	url, token, u, p, project string
+	url, u, p, project string
 )
 
 func NewDeleteCommand() *cobra.Command {

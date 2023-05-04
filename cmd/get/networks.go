@@ -20,17 +20,24 @@ var networksCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
-		token = auth.GetToken(url, u, p, project)
-		err := getNetworks()
+		token, err := auth.GetToken(url, u, p, project)
+		if err != nil {
+			log.Fatalf("Error authenticating: %s", err)
+		}
+		err = getNetworks(token)
 		if err != nil {
 			log.Fatalf("Error getting networks, %s", err)
 		}
 	},
 }
 
-func getNetworks() (err error) {
+func getNetworks(token string) (err error) {
 
-	client := auth.InitClient(url)
+	client, err := auth.InitClient(url)
+	if err != nil {
+		return
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -54,5 +61,5 @@ func getNetworks() (err error) {
 		fmt.Printf("Name: %s\tID: %s\n", i.Name, i.Id)
 	}
 
-	return 
+	return
 }

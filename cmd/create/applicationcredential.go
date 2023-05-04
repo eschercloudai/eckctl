@@ -20,16 +20,22 @@ var createApplicationCredentialCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
-		token = auth.GetToken(url, u, p, project)
-		_, err := createApplicationCredential(applicationCredentialName)
+		token, err := auth.GetToken(url, u, p, project)
+		if err != nil {
+			log.Fatalf("Error authenticating: %s", err)
+		}
+		_, err = createApplicationCredential(applicationCredentialName, token)
 		if err != nil {
 			log.Fatalf("Error creating application credential: %s", err)
 		}
 	},
 }
 
-func createApplicationCredential(name string) (ac ApplicationCredential, err error) {
-	client := auth.InitClient(url)
+func createApplicationCredential(name string, token string) (ac ApplicationCredential, err error) {
+	client, err := auth.InitClient(url)
+	if err != nil {
+		return
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

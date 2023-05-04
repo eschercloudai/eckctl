@@ -22,9 +22,11 @@ func controlPlaneCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 				cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
-			project = cmd.Flag("project").Value.String()
-			token = auth.GetToken(url, u, p, project)
-			err := printControlPlanes()
+			token, err := auth.GetToken(url, u, p, project)
+			if err != nil {
+				log.Fatalf("Error authenticating: %s", err)
+			}
+			err = printControlPlanes(token)
 			if err != nil {
 				log.Fatalf("Error retrieving control planes: %s", err)
 			}
@@ -38,8 +40,11 @@ func printControlPlaneDetails(i generated.ControlPlane) {
 	fmt.Printf("Name: %s\tStatus: %s\tVersion: %s\n", i.Name, i.Status.Status, i.ApplicationBundle.Version)
 }
 
-func getControlPlanes() (controlPlanes []generated.ControlPlane, err error) {
-	client := auth.InitClient(url)
+func getControlPlanes(token string) (controlPlanes []generated.ControlPlane, err error) {
+	client, err := auth.InitClient(url)
+	if err != nil {
+		return
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -68,8 +73,8 @@ func getControlPlanes() (controlPlanes []generated.ControlPlane, err error) {
 	return
 }
 
-func printControlPlanes() (err error) {
-	cps, err := getControlPlanes()
+func printControlPlanes(token string) (err error) {
+	cps, err := getControlPlanes(token)
 	if err != nil {
 		return
 	}

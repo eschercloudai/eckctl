@@ -18,8 +18,11 @@ func deleteControlPlaneCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 				cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
-			token = auth.GetToken(url, u, p, project)
-			err := deleteControlPlane()
+			token, err := auth.GetToken(url, u, p, project)
+			if err != nil {
+				log.Fatalf("Error authenticating: %s", err)
+			}
+			err = deleteControlPlane(token)
 			if err != nil {
 				log.Fatalf("Error deleting Control Plane: %s", err)
 			}
@@ -33,9 +36,12 @@ func deleteControlPlaneCmd() *cobra.Command {
 	return cmd
 }
 
-func deleteControlPlane() (err error) {
+func deleteControlPlane(token string) (err error) {
 
-	client := auth.InitClient(url)
+	client, err := auth.InitClient(url)
+	if err != nil {
+		return
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

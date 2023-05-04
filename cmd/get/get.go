@@ -7,12 +7,12 @@ import (
 )
 
 var (
-	controlPlaneName          string
-	clusterName               string
-	imageName                 string
-	imageId                   string
-	allFlag                   bool
-	url, token, u, p, project string
+	controlPlaneName   string
+	clusterName        string
+	imageName          string
+	imageId            string
+	allFlag            bool
+	url, u, p, project string
 )
 
 type Images struct {
