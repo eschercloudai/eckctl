@@ -12,7 +12,7 @@ var (
 	controlPlaneVersion       string
 	clusterName               string
 	clusterDefPath            string
-	url, token, u, p, project string
+	url, u, p, project        string
 )
 
 type ApplicationCredential struct {

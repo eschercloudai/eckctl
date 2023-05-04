@@ -20,17 +20,23 @@ var projectsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
-		token = auth.GetToken(url, u, p, project)
-		err := getProjects()
+		token, err := auth.GetToken(url, u, p, project)
+		if err != nil {
+			log.Fatalf("Error authenticating: %s", err)
+		}
+		err = getProjects(token)
 		if err != nil {
 			log.Fatalf("Error retrieving projects: %s", err)
 		}
 	},
 }
 
-func getProjects() (err error) {
+func getProjects(token string) (err error) {
 
-	client := auth.InitClient(url)
+	client, err := auth.InitClient(url)
+	if err != nil {
+		return
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -44,7 +50,7 @@ func getProjects() (err error) {
 	if err != nil {
 		return
 	}
-		
+
 	projects := generated.OpenstackProjects{}
 
 	err = json.Unmarshal(body, &projects)

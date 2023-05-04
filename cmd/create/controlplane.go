@@ -18,16 +18,22 @@ var createControlPlaneCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
-		token = auth.GetToken(url, u, p, project)
-		err := createControlPlane()
+		token, err := auth.GetToken(url, u, p, project)
+		if err != nil {
+			log.Fatalf("Error authenticating: %s", err)
+		}
+		err = createControlPlane(token)
 		if err != nil {
 			log.Fatalf("Error creating control plane: %s", err)
 		}
 	},
 }
 
-func createControlPlane() (err error) {
-	client := auth.InitClient(url)
+func createControlPlane(token string) (err error) {
+	client, err := auth.InitClient(url)
+	if err != nil {
+		return
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

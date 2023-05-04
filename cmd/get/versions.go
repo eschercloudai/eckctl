@@ -20,17 +20,23 @@ var versionsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
-		token = auth.GetToken(url, u, p, project)
-		err := getVersions()
+		token, err := auth.GetToken(url, u, p, project)
+		if err != nil {
+			log.Fatalf("Error authenticating: %s", err)
+		}
+		err = getVersions(token)
 		if err != nil {
 			log.Fatalf("Error retrieving versions: %s", err)
 		}
 	},
 }
 
-func getControlPlaneBundles() (versions []generated.ApplicationBundle, err error) {
+func getControlPlaneBundles(token string) (versions []generated.ApplicationBundle, err error) {
 
-	client := auth.InitClient(url)
+	client, err := auth.InitClient(url)
+	if err != nil {
+		return
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -54,9 +60,12 @@ func getControlPlaneBundles() (versions []generated.ApplicationBundle, err error
 	return
 }
 
-func getClusterBundles() (versions []generated.ApplicationBundle, err error) {
+func getClusterBundles(token string) (versions []generated.ApplicationBundle, err error) {
 
-	client := auth.InitClient(url)
+	client, err := auth.InitClient(url)
+	if err != nil {
+		return
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -93,16 +102,16 @@ func printBundle(bundle generated.ApplicationBundle) {
 	}
 }
 
-func getVersions() (err error) {
+func getVersions(token string) (err error) {
 	fmt.Println("Cluster Bundles:")
-	clusterBundles, err := getClusterBundles()
+	clusterBundles, err := getClusterBundles(token)
 	if err != nil {
 		return
 	}
 	for _, i := range clusterBundles {
 		printBundle(i)
 	}
-	controlPlaneBundles, err := getControlPlaneBundles()
+	controlPlaneBundles, err := getControlPlaneBundles(token)
 	if err != nil {
 		return
 	}

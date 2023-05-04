@@ -23,8 +23,11 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 				cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
-			token = auth.GetToken(url, u, p, project)
-			err := printClusters()
+			token, err := auth.GetToken(url, u, p, project)
+			if err != nil {
+				log.Fatalf("Error authenticating: %s", err)
+			}
+			err = printClusters(token)
 			if err != nil {
 				log.Fatalf("Error getting clusters: %s", err)
 			}
@@ -47,9 +50,12 @@ func printClusterDetails(controlPlane string, i generated.KubernetesCluster) {
 	}
 }
 
-func getClusters(controlplane string) (clusters []generated.KubernetesCluster, err error) {
+func getClusters(controlplane string, token string) (clusters []generated.KubernetesCluster, err error) {
 
-	client := auth.InitClient(url)
+	client, err := auth.InitClient(url)
+	if err != nil {
+		return
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -85,8 +91,8 @@ func getClusters(controlplane string) (clusters []generated.KubernetesCluster, e
 	return
 }
 
-func printClusters() (err error) {
-	controlPlanes, err := getControlPlanes()
+func printClusters(token string) (err error) {
+	controlPlanes, err := getControlPlanes(token)
 	if err != nil {
 		return err
 	}
@@ -95,7 +101,7 @@ func printClusters() (err error) {
 			return
 		}
 		for _, c := range controlPlanes {
-			clusters, err := getClusters(c.Name)
+			clusters, err := getClusters(c.Name, token)
 			if err != nil {
 				return err
 			}
@@ -104,7 +110,7 @@ func printClusters() (err error) {
 			}
 		}
 	} else if controlPlaneName != "" {
-		clusters, err := getClusters(controlPlaneName)
+		clusters, err := getClusters(controlPlaneName, token)
 		if err != nil {
 			return err
 		}
