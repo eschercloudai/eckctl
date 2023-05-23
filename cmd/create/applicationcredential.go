@@ -32,7 +32,7 @@ var createApplicationCredentialCmd = &cobra.Command{
 }
 
 func createApplicationCredential(name string, token string) (ac ApplicationCredential, err error) {
-	client, err := auth.InitClient(url)
+	client, err := auth.NewClient(url, token)
 	if err != nil {
 		return
 	}
@@ -43,7 +43,7 @@ func createApplicationCredential(name string, token string) (ac ApplicationCrede
 
 	aco.Name = name
 
-	resp, err := client.PostApiV1ProvidersOpenstackApplicationCredentials(ctx, *aco, auth.SetAuthorizationHeader(token))
+	resp, err := client.PostApiV1ProvidersOpenstackApplicationCredentials(ctx, *aco)
 	if err != nil {
 		return
 	}

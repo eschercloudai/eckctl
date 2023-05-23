@@ -52,7 +52,7 @@ func printClusterDetails(controlPlane string, i generated.KubernetesCluster) {
 
 func getClusters(controlplane string, token string) (clusters []generated.KubernetesCluster, err error) {
 
-	client, err := auth.InitClient(url)
+	client, err := auth.NewClient(url, token)
 	if err != nil {
 		return
 	}
@@ -60,7 +60,7 @@ func getClusters(controlplane string, token string) (clusters []generated.Kubern
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := client.GetApiV1ControlplanesControlPlaneNameClusters(ctx, controlplane, auth.SetAuthorizationHeader((token)))
+	resp, err := client.GetApiV1ControlplanesControlPlaneNameClusters(ctx, controlplane)
 	if err != nil {
 		return
 	}

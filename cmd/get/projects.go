@@ -33,7 +33,7 @@ var projectsCmd = &cobra.Command{
 
 func getProjects(token string) (err error) {
 
-	client, err := auth.InitClient(url)
+	client, err := auth.NewClient(url, token)
 	if err != nil {
 		return
 	}
@@ -41,7 +41,7 @@ func getProjects(token string) (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := client.GetApiV1ProvidersOpenstackProjects(ctx, auth.SetAuthorizationHeader(token))
+	resp, err := client.GetApiV1ProvidersOpenstackProjects(ctx)
 	if err != nil {
 		return
 	}

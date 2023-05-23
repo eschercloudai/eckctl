@@ -30,7 +30,7 @@ var createControlPlaneCmd = &cobra.Command{
 }
 
 func createControlPlane(token string) (err error) {
-	client, err := auth.InitClient(url)
+	client, err := auth.NewClient(url, token)
 	if err != nil {
 		return
 	}
@@ -45,13 +45,13 @@ func createControlPlane(token string) (err error) {
 	cp.ApplicationBundle.Version = controlPlaneVersion
 
 	// Create the Unikorn Project if it doesn't already exist, 409s are OK
-	resp, err := client.PostApiV1Project(ctx, auth.SetAuthorizationHeader(token))
+	resp, err := client.PostApiV1Project(ctx)
 	if (resp.StatusCode != http.StatusConflict) && (resp.StatusCode != http.StatusAccepted) {
 		err = fmt.Errorf("Error creating project, response code: %v", resp.StatusCode)
 		return
 	}
 
-	resp, err = client.PostApiV1Controlplanes(ctx, cp, auth.SetAuthorizationHeader(token))
+	resp, err = client.PostApiV1Controlplanes(ctx, cp)
 	if resp.StatusCode != http.StatusAccepted {
 		err = fmt.Errorf("Unexpected response code: %v", resp.StatusCode)
 		return
