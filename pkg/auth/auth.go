@@ -15,7 +15,7 @@ import (
 
 // NewClient is a helper to abstract away client authentication.
 func NewClient(server string, accessToken string) (*generated.ClientWithResponses, error) {
-	return generated.NewClientWithResponses(server, generated.WithHTTPClient(httpClient(true)), generated.WithRequestEditorFn(bearerTokenInjector(accessToken)))
+	return generated.NewClientWithResponses(server, generated.WithHTTPClient(httpClient(false)), generated.WithRequestEditorFn(bearerTokenInjector(accessToken)))
 }
 
 func GetToken(server string, u string, p string, project string) (accessToken string, err error) {
@@ -87,7 +87,7 @@ func bearerTokenInjector(token string) generated.RequestEditorFn {
 // See https://tools.ietf.org/html/rfc6749#section-4.3.
 func oauth2Authenticate(server string, u string, p string) (*oauth2.Token, error) {
 
-	client := httpClient(true)
+	client := httpClient(false)
 
 	ctx := context.WithValue(context.Background(), oauth2.HTTPClient, client)
 
