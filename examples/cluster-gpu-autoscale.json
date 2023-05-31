@@ -1,0 +1,62 @@
+{
+    "applicationBundle": {
+        "name": "kubernetes-cluster-1.2.0",
+        "version": "1.2.0"
+    },
+    "openstack": {
+        "computeAvailabilityZone": "nova",
+        "volumeAvailabilityZone": "nova",
+        "externalNetworkID": "c9d130bc-301d-45c0-9328-a6964af65579",
+        "sshKeyName": "deadline-ed25519"
+    },
+    "network": {
+        "nodePrefix": "192.168.0.0/16",
+        "servicePrefix": "172.16.0.0/12",
+        "podPrefix": "10.0.0.0/8",
+        "dnsNameservers": [
+            "8.8.8.8",
+            "8.8.4.4"
+        ]
+    },
+    "controlPlane": {
+        "replicas": 1,
+        "version": "v1.26.4",
+        "imageName": "eck-230522-623627db",
+        "flavorName": "g.2.standard",
+        "disk": {
+            "size": 50
+        }
+    },
+    "features": {
+	    "autoscaling": true
+    },
+    "workloadPools": [
+        {
+            "name": "cpu",
+            "machine": {
+                "replicas": 1,
+                "version": "v1.26.4",
+                "imageName": "eck-230522-623627db",
+                "flavorName": "g.2.standard",
+                "disk": {
+                    "size": 200
+                }
+            }
+        },
+        {
+            "name": "gpu",
+	    "autoscaling": {
+		"minimumReplicas": 0,
+		"maximumReplicas": 3
+	    },
+            "machine": {
+                "version": "v1.26.4",
+                "imageName": "eck-230522-623627db",
+                "flavorName": "g.4.highmem.a100.1g.10gb",
+                "disk": {
+                    "size": 200
+                }
+            }
+        }
+    ]
+}

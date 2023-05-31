@@ -46,7 +46,7 @@ func readClusterDefs(filePath string) (cluster generated.KubernetesCluster, err 
 }
 
 func createCluster(token string) (err error) {
-	client, err := auth.InitClient(url)
+	client, err := auth.NewClient(url, token)
 	if err != nil {
 		return
 	}
@@ -80,7 +80,7 @@ func createCluster(token string) (err error) {
 
 	fmt.Println(string(pretty.Color(pretty.PrettyOptions(clusterJson, opts), nil)))
 
-	resp, err := client.PostApiV1ControlplanesControlPlaneNameClusters(ctx, controlPlaneName, cluster, auth.SetAuthorizationHeader((token)))
+	resp, err := client.PostApiV1ControlplanesControlPlaneNameClusters(ctx, controlPlaneName, cluster)
 	if resp.StatusCode != http.StatusAccepted {
 		err = fmt.Errorf("Error submitting cluster definition, %v", resp.StatusCode)
 		return

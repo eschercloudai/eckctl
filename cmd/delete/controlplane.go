@@ -38,7 +38,7 @@ func deleteControlPlaneCmd() *cobra.Command {
 
 func deleteControlPlane(token string) (err error) {
 
-	client, err := auth.InitClient(url)
+	client, err := auth.NewClient(url, token)
 	if err != nil {
 		return
 	}
@@ -46,7 +46,7 @@ func deleteControlPlane(token string) (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := client.DeleteApiV1ControlplanesControlPlaneName(ctx, controlPlaneName, auth.SetAuthorizationHeader(token))
+	resp, err := client.DeleteApiV1ControlplanesControlPlaneName(ctx, controlPlaneName)
 	if err != nil {
 		return
 	}

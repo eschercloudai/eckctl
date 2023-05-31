@@ -33,7 +33,7 @@ var networksCmd = &cobra.Command{
 
 func getNetworks(token string) (err error) {
 
-	client, err := auth.InitClient(url)
+	client, err := auth.NewClient(url, token)
 	if err != nil {
 		return
 	}
@@ -41,7 +41,7 @@ func getNetworks(token string) (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := client.GetApiV1ProvidersOpenstackExternalNetworks(ctx, auth.SetAuthorizationHeader(token))
+	resp, err := client.GetApiV1ProvidersOpenstackExternalNetworks(ctx)
 	if err != nil {
 		return
 	}

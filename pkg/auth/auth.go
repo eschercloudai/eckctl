@@ -1,119 +1,127 @@
+// https://github.com/eschercloudai/unikorn/blob/main/examples/serverclient.go
 package auth
 
 import (
+	"bytes"
 	"context"
+	"crypto/tls"
 	"eckctl/pkg/generated"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io"
-	"log"
 	"net/http"
-	"time"
+
+	"golang.org/x/oauth2"
 )
 
-func isBase64Encoded(s string) bool {
-	_, err := base64.StdEncoding.DecodeString(s)
-	return err == nil
+// NewClient is a helper to abstract away client authentication.
+func NewClient(server string, accessToken string) (*generated.ClientWithResponses, error) {
+	return generated.NewClientWithResponses(server, generated.WithHTTPClient(httpClient(false)), generated.WithRequestEditorFn(bearerTokenInjector(accessToken)))
 }
 
-func SetAuthorizationHeader(token string) generated.RequestEditorFn {
-	if isBase64Encoded(token) {
-		return func(ctx context.Context, req *http.Request) error {
-			req.Header.Set("Authorization", fmt.Sprintf("Basic %s", token))
-			return nil
+func GetToken(server string, u string, p string, project string) (accessToken string, err error) {
+	token, err := oauth2Authenticate(server, u, p)
+	if err != nil {
+		return
+	}
+
+	scopedToken, err := getScopedToken(token, server, project)
+	if err != nil {
+		return
+	}
+
+	accessToken = scopedToken.AccessToken
+
+	return
+}
+
+func httpClient(insecure bool) *http.Client {
+	if insecure {
+		return &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: true,
+				},
+			},
 		}
 	} else {
-		return func(ctx context.Context, req *http.Request) error {
-			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
-			return nil
+		return &http.Client{}
+	}
+}
+
+// JSONReader implments io.Reader that does lazy JSON marshaling.
+type JSONReader struct {
+	data interface{}
+	buf  *bytes.Buffer
+}
+
+func NewJSONReader(data interface{}) *JSONReader {
+	return &JSONReader{
+		data: data,
+	}
+}
+
+func (r *JSONReader) Read(p []byte) (int, error) {
+	if r.buf == nil {
+		data, err := json.Marshal(r.data)
+		if err != nil {
+			return 0, err
 		}
+
+		r.buf = bytes.NewBuffer(data)
+	}
+
+	return r.buf.Read(p)
+}
+
+// bearerTokenInjector is a handy function that augments the clients to add
+func bearerTokenInjector(token string) generated.RequestEditorFn {
+	return func(ctx context.Context, req *http.Request) error {
+		req.Header.Set("Authorization", "Bearer "+token)
+
+		return nil
 	}
 }
 
-func InitClient(url string) (client *generated.Client, err error) {
-	customHTTPClient := &http.Client{
-		Timeout: 10 * time.Second,
+
+// Login via oauth2's password grant flow.  But you should never do this.
+// See https://tools.ietf.org/html/rfc6749#section-4.3.
+func oauth2Authenticate(server string, u string, p string) (*oauth2.Token, error) {
+
+	client := httpClient(false)
+
+	ctx := context.WithValue(context.Background(), oauth2.HTTPClient, client)
+
+	config := &oauth2.Config{
+		Endpoint: oauth2.Endpoint{
+			TokenURL: server + "/api/v1/auth/oauth2/tokens",
+		},
 	}
 
-	client, err = generated.NewClient(url, generated.WithHTTPClient(customHTTPClient))
-	if err != nil {
-		return
-	}
-
-	return
+	return config.PasswordCredentialsToken(ctx, u, p)
 }
 
-func getBearer(url string, t string, p string) (bearer string, err error) {
-	client, err := InitClient(url)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	tokenScope := new(generated.TokenScope)
-	tokenScope.Project.Id = p
-
-	resp, err := client.PostApiV1AuthTokensToken(ctx, *tokenScope, SetAuthorizationHeader(t))
+// getScopedToken exchanges a token for one with a new project scope.
+func getScopedToken(token *oauth2.Token, server string, projectID string) (*generated.Token, error) {
+	client, err := NewClient(server, token.AccessToken)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		err := fmt.Errorf("Unexpected response when obtaining bearer token: %v", resp.StatusCode)
-		return "", err
+	scope := &generated.TokenScope{
+		Project: generated.TokenScopeProject{
+			Id: projectID,
+		},
 	}
 
-	body, err := io.ReadAll(resp.Body)
+	response, err := client.PostApiV1AuthTokensTokenWithBodyWithResponse(context.TODO(), "application/json", NewJSONReader(scope))
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	b := generated.Token{}
-	err = json.Unmarshal(body, &b)
-
-	if err != nil {
-		log.Fatal(err)
+	if response.StatusCode() != 200 {
+		return nil, fmt.Errorf("%w: unable to scope token", err)
 	}
 
-	return b.Token, err
+	return response.JSON200, nil
 }
 
-func GetToken(url string, username string, password string, project string) (token string, err error) {
-	client, err := InitClient(url)
-	if err != nil {
-		return
-	}
-
-	auth := base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	resp, err := client.PostApiV1AuthTokensPassword(ctx, SetAuthorizationHeader(auth))
-	if err != nil {
-		return
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Unexpected response code when authenticating: %s %v", err, resp.StatusCode)
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return
-	}
-
-	t := generated.Token{}
-	err = json.Unmarshal(body, &t)
-	if err != nil {
-		return
-	}
-
-	token, err = getBearer(url, t.Token, project)
-	if err != nil {
-		return
-	}
-	return
-}

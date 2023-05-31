@@ -14,7 +14,9 @@ import (
 )
 
 var (
-	cfgFile string
+	cfgFile                          string
+	url, username, password, project string
+	insecure                         bool
 )
 
 func Execute() {
@@ -31,11 +33,6 @@ func Execute() {
 }
 
 func NewRootCommand() *cobra.Command {
-	url := ""
-	username := ""
-	password := ""
-	project := ""
-
 	rootCmd := &cobra.Command{
 		Use:   "eckctl",
 		Short: "A CLI for working with the EscherCloud Kubernetes (ECK) Service",
@@ -49,6 +46,7 @@ func NewRootCommand() *cobra.Command {
 	rootCmd.PersistentFlags().StringVar(&username, "username", "", "Username")
 	rootCmd.PersistentFlags().StringVar(&password, "password", "", "Password")
 	rootCmd.PersistentFlags().StringVar(&project, "project", "", "Project ID")
+	rootCmd.PersistentFlags().BoolVar(&insecure, "insecure", false, "Disable server certificate validation, for use when testing")
 	return rootCmd
 }
 
