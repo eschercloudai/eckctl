@@ -1,4 +1,4 @@
-module eckctl
+module github.com/eschercloudai/eckctl
 
 go 1.20
 

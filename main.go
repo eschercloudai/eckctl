@@ -16,7 +16,7 @@ limitations under the License.
 package main
 
 import (
-	"eckctl/cmd"
+	"github.com/eschercloudai/eckctl/cmd"
 )
 
 func main() {

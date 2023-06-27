@@ -7,7 +7,6 @@ import (
 )
 
 var (
-	applicationCredentialName string
 	controlPlaneName          string
 	controlPlaneVersion       string
 	clusterName               string
@@ -28,36 +27,26 @@ func NewCreateCommand() *cobra.Command {
 
 	commands := []*cobra.Command{
 		createControlPlaneCmd,
-		createApplicationCredentialCmd,
 		createClusterCmd,
 	}
 
 	createCmd.AddCommand(commands...)
 
-	createApplicationCredentialCmd.Flags().StringVar(&applicationCredentialName, "name", "", "Name of application credential")
-	err := createApplicationCredentialCmd.MarkFlagRequired("name")
-	if err != nil {
-		log.Fatalln(err)
-	}
 	createControlPlaneCmd.Flags().StringVar(&controlPlaneName, "name", "", "Name of control plane")
-	err = createControlPlaneCmd.MarkFlagRequired("name")
-	if err != nil {
+	if err := createControlPlaneCmd.MarkFlagRequired("name"); err != nil {
 		log.Fatalln(err)
 	}
 	createControlPlaneCmd.Flags().StringVar(&controlPlaneVersion, "version", "1.0.1", "Version of control plane")
 	createClusterCmd.Flags().StringVar(&clusterName, "name", "", "Name of cluster")
 	createClusterCmd.Flags().StringVar(&controlPlaneName, "controlplane", "", "Name of associated control plane")
 	createClusterCmd.Flags().StringVar(&clusterDefPath, "json", "", "Path to JSON cluster definition")
-	err = createClusterCmd.MarkFlagRequired("name")
-	if err != nil {
+	if err := createClusterCmd.MarkFlagRequired("name"); err != nil {
 		log.Fatalln(err)
 	}
-	err = createClusterCmd.MarkFlagRequired("controlplane")
-	if err != nil {
+	if err := createClusterCmd.MarkFlagRequired("controlplane"); err != nil {
 		log.Fatalln(err)
 	}
-	err = createClusterCmd.MarkFlagRequired("json")
-	if err != nil {
+	if err := createClusterCmd.MarkFlagRequired("json"); err != nil {
 		log.Fatalln(err)
 	}
 

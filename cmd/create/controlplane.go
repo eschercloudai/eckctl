@@ -2,13 +2,13 @@ package create
 
 import (
 	"context"
-	"eckctl/pkg/auth"
-	"eckctl/pkg/generated"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
+	"github.com/eschercloudai/eckctl/pkg/auth"
+	"github.com/eschercloudai/eckctl/pkg/generated"
 	"github.com/spf13/cobra"
 )
 
