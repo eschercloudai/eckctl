@@ -2,8 +2,6 @@ package create
 
 import (
 	"context"
-	"eckctl/pkg/auth"
-	"eckctl/pkg/generated"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -11,6 +9,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/eschercloudai/eckctl/pkg/auth"
+	"github.com/eschercloudai/eckctl/pkg/generated"
 	"github.com/spf13/cobra"
 	"github.com/tidwall/pretty"
 )
@@ -59,14 +59,7 @@ func createCluster(token string) (err error) {
 		return
 	}
 
-	ac, err := createApplicationCredential(controlPlaneName+"-"+clusterName, token)
-	if err != nil {
-		return
-	}
-
 	cluster.Name = clusterName
-	cluster.Openstack.ApplicationCredentialID = ac.Id
-	cluster.Openstack.ApplicationCredentialSecret = ac.Secret
 
 	fmt.Printf("Creating cluster %s with the following definition:\n", cluster.Name)
 

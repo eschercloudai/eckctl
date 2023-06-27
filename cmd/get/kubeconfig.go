@@ -2,12 +2,12 @@ package get
 
 import (
 	"context"
-	"eckctl/pkg/auth"
 	"fmt"
 	"io"
 	"log"
 	"time"
 
+	"github.com/eschercloudai/eckctl/pkg/auth"
 	"github.com/spf13/cobra"
 )
 

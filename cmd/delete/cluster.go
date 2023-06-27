@@ -2,12 +2,12 @@ package delete
 
 import (
 	"context"
-	"eckctl/pkg/auth"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
+	"github.com/eschercloudai/eckctl/pkg/auth"
 	"github.com/spf13/cobra"
 )
 

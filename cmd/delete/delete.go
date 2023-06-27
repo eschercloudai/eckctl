@@ -15,7 +15,6 @@ func NewDeleteCommand() *cobra.Command {
 
 	commands := []*cobra.Command{
 		deleteControlPlaneCmd(),
-		deleteApplicationCredentialCmd(),
 		deleteClusterCmd(),
 	}
 

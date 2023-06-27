@@ -1,13 +1,13 @@
 package cmd
 
 import (
-	"eckctl/cmd/create"
-	"eckctl/cmd/delete"
-	"eckctl/cmd/get"
 	"fmt"
 	"log"
 	"os"
 
+        "github.com/eschercloudai/eckctl/cmd/create"
+        "github.com/eschercloudai/eckctl/cmd/delete"
+        "github.com/eschercloudai/eckctl/cmd/get"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -42,11 +42,12 @@ func NewRootCommand() *cobra.Command {
 		},
 	}
 
-	rootCmd.PersistentFlags().StringVar(&url, "url", "https://unikorn.nl1.eschercloud.dev", "URL to Unikorn API")
+	rootCmd.PersistentFlags().StringVar(&url, "url", "https://eck.nl1.eschercloud.dev", "URL to Unikorn API")
 	rootCmd.PersistentFlags().StringVar(&username, "username", "", "Username")
 	rootCmd.PersistentFlags().StringVar(&password, "password", "", "Password")
 	rootCmd.PersistentFlags().StringVar(&project, "project", "", "Project ID")
 	rootCmd.PersistentFlags().BoolVar(&insecure, "insecure", false, "Disable server certificate validation, for use when testing")
+
 	return rootCmd
 }
 

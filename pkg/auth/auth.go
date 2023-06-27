@@ -5,11 +5,11 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
-	"eckctl/pkg/generated"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
+	"github.com/eschercloudai/eckctl/pkg/generated"
 	"golang.org/x/oauth2"
 )
 
