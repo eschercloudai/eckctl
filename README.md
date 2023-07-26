@@ -11,7 +11,7 @@ It probably helps to familiarise yourself with the [ECK architecture and princip
 
 ## Configuration
 
-`eckctl` can be configured via ~/.eckctl:
+`eckctl` can be configured via `~/.eckctl.yaml`:
 
 ```yaml
 username: "n.jones@eschercloud.ai"
