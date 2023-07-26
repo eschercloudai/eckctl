@@ -82,7 +82,6 @@ func bearerTokenInjector(token string) generated.RequestEditorFn {
 	}
 }
 
-
 // Login via oauth2's password grant flow.  But you should never do this.
 // See https://tools.ietf.org/html/rfc6749#section-4.3.
 func oauth2Authenticate(server string, u string, p string) (*oauth2.Token, error) {
@@ -118,10 +117,9 @@ func getScopedToken(token *oauth2.Token, server string, projectID string) (*gene
 		return nil, err
 	}
 
-	if response.StatusCode() != 200 {
+	if response.StatusCode() != 201 {
 		return nil, fmt.Errorf("%w: unable to scope token", err)
 	}
 
-	return response.JSON200, nil
+	return response.JSON201, nil
 }
-
