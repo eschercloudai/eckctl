@@ -288,6 +288,9 @@ type OpenstackFlavor struct {
 	// Cpus The number of CPUs.
 	Cpus int `json:"cpus"`
 
+	// Disk The amount of ephemeral disk in GB.
+	Disk int `json:"disk"`
+
 	// Gpus The number of GPUs, if not set there are none.
 	Gpus *int `json:"gpus,omitempty"`
 
@@ -491,9 +494,6 @@ type KubernetesClusterResponse = KubernetesCluster
 
 // KubernetesClustersResponse A list of Unikorn Kubernetes clusters.
 type KubernetesClustersResponse = KubernetesClusters
-
-// NullResponse defines model for nullResponse.
-type NullResponse = map[string]interface{}
 
 // OpenstackBlockStorageAvailabilityZonesResponse A list of Openstack availability zones.
 type OpenstackBlockStorageAvailabilityZonesResponse = OpenstackAvailabilityZones
