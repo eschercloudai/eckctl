@@ -89,11 +89,11 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
-	// GetApiV1ApplicationBundlesCluster request
-	GetApiV1ApplicationBundlesCluster(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiV1ApplicationbundlesCluster request
+	GetApiV1ApplicationbundlesCluster(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiV1ApplicationBundlesControlPlane request
-	GetApiV1ApplicationBundlesControlPlane(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiV1ApplicationbundlesControlPlane request
+	GetApiV1ApplicationbundlesControlPlane(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiV1AuthJwks request
 	GetApiV1AuthJwks(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -158,9 +158,6 @@ type ClientInterface interface {
 	// DeleteApiV1Project request
 	DeleteApiV1Project(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiV1Project request
-	GetApiV1Project(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// PostApiV1Project request
 	PostApiV1Project(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -186,8 +183,8 @@ type ClientInterface interface {
 	GetApiV1ProvidersOpenstackProjects(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
-func (c *Client) GetApiV1ApplicationBundlesCluster(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiV1ApplicationBundlesClusterRequest(c.Server)
+func (c *Client) GetApiV1ApplicationbundlesCluster(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiV1ApplicationbundlesClusterRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -198,8 +195,8 @@ func (c *Client) GetApiV1ApplicationBundlesCluster(ctx context.Context, reqEdito
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiV1ApplicationBundlesControlPlane(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiV1ApplicationBundlesControlPlaneRequest(c.Server)
+func (c *Client) GetApiV1ApplicationbundlesControlPlane(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiV1ApplicationbundlesControlPlaneRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -486,18 +483,6 @@ func (c *Client) DeleteApiV1Project(ctx context.Context, reqEditors ...RequestEd
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiV1Project(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiV1ProjectRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *Client) PostApiV1Project(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostApiV1ProjectRequest(c.Server)
 	if err != nil {
@@ -594,8 +579,8 @@ func (c *Client) GetApiV1ProvidersOpenstackProjects(ctx context.Context, reqEdit
 	return c.Client.Do(req)
 }
 
-// NewGetApiV1ApplicationBundlesClusterRequest generates requests for GetApiV1ApplicationBundlesCluster
-func NewGetApiV1ApplicationBundlesClusterRequest(server string) (*http.Request, error) {
+// NewGetApiV1ApplicationbundlesClusterRequest generates requests for GetApiV1ApplicationbundlesCluster
+func NewGetApiV1ApplicationbundlesClusterRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -603,7 +588,7 @@ func NewGetApiV1ApplicationBundlesClusterRequest(server string) (*http.Request, 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/v1/applicationBundles/cluster")
+	operationPath := fmt.Sprintf("/api/v1/applicationbundles/cluster")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -621,8 +606,8 @@ func NewGetApiV1ApplicationBundlesClusterRequest(server string) (*http.Request, 
 	return req, nil
 }
 
-// NewGetApiV1ApplicationBundlesControlPlaneRequest generates requests for GetApiV1ApplicationBundlesControlPlane
-func NewGetApiV1ApplicationBundlesControlPlaneRequest(server string) (*http.Request, error) {
+// NewGetApiV1ApplicationbundlesControlPlaneRequest generates requests for GetApiV1ApplicationbundlesControlPlane
+func NewGetApiV1ApplicationbundlesControlPlaneRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -630,7 +615,7 @@ func NewGetApiV1ApplicationBundlesControlPlaneRequest(server string) (*http.Requ
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/v1/applicationBundles/controlPlane")
+	operationPath := fmt.Sprintf("/api/v1/applicationbundles/controlPlane")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1276,33 +1261,6 @@ func NewDeleteApiV1ProjectRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewGetApiV1ProjectRequest generates requests for GetApiV1Project
-func NewGetApiV1ProjectRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/v1/project")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 // NewPostApiV1ProjectRequest generates requests for PostApiV1Project
 func NewPostApiV1ProjectRequest(server string) (*http.Request, error) {
 	var err error
@@ -1562,11 +1520,11 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
-	// GetApiV1ApplicationBundlesCluster request
-	GetApiV1ApplicationBundlesClusterWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1ApplicationBundlesClusterResponse, error)
+	// GetApiV1ApplicationbundlesCluster request
+	GetApiV1ApplicationbundlesClusterWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1ApplicationbundlesClusterResponse, error)
 
-	// GetApiV1ApplicationBundlesControlPlane request
-	GetApiV1ApplicationBundlesControlPlaneWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1ApplicationBundlesControlPlaneResponse, error)
+	// GetApiV1ApplicationbundlesControlPlane request
+	GetApiV1ApplicationbundlesControlPlaneWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1ApplicationbundlesControlPlaneResponse, error)
 
 	// GetApiV1AuthJwks request
 	GetApiV1AuthJwksWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1AuthJwksResponse, error)
@@ -1631,9 +1589,6 @@ type ClientWithResponsesInterface interface {
 	// DeleteApiV1Project request
 	DeleteApiV1ProjectWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteApiV1ProjectResponse, error)
 
-	// GetApiV1Project request
-	GetApiV1ProjectWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1ProjectResponse, error)
-
 	// PostApiV1Project request
 	PostApiV1ProjectWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostApiV1ProjectResponse, error)
 
@@ -1659,7 +1614,7 @@ type ClientWithResponsesInterface interface {
 	GetApiV1ProvidersOpenstackProjectsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1ProvidersOpenstackProjectsResponse, error)
 }
 
-type GetApiV1ApplicationBundlesClusterResponse struct {
+type GetApiV1ApplicationbundlesClusterResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *ApplicationBundles
@@ -1669,7 +1624,7 @@ type GetApiV1ApplicationBundlesClusterResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiV1ApplicationBundlesClusterResponse) Status() string {
+func (r GetApiV1ApplicationbundlesClusterResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1677,14 +1632,14 @@ func (r GetApiV1ApplicationBundlesClusterResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiV1ApplicationBundlesClusterResponse) StatusCode() int {
+func (r GetApiV1ApplicationbundlesClusterResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetApiV1ApplicationBundlesControlPlaneResponse struct {
+type GetApiV1ApplicationbundlesControlPlaneResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *ApplicationBundles
@@ -1694,7 +1649,7 @@ type GetApiV1ApplicationBundlesControlPlaneResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiV1ApplicationBundlesControlPlaneResponse) Status() string {
+func (r GetApiV1ApplicationbundlesControlPlaneResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1702,7 +1657,7 @@ func (r GetApiV1ApplicationBundlesControlPlaneResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiV1ApplicationBundlesControlPlaneResponse) StatusCode() int {
+func (r GetApiV1ApplicationbundlesControlPlaneResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1713,6 +1668,7 @@ type GetApiV1AuthJwksResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *JsonWebKeySet
+	JSON500      *Oauth2Error
 }
 
 // Status returns HTTPResponse.Status
@@ -1757,6 +1713,7 @@ func (r GetApiV1AuthOauth2AuthorizationResponse) StatusCode() int {
 type PostApiV1AuthOauth2TokensResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *Token
 	JSON400      *Oauth2Error
 	JSON401      *Oauth2Error
 	JSON500      *Oauth2Error
@@ -1831,6 +1788,7 @@ type GetApiV1ControlplanesResponse struct {
 	JSON200      *ControlPlanes
 	JSON400      *Oauth2Error
 	JSON401      *Oauth2Error
+	JSON404      *Oauth2Error
 	JSON500      *Oauth2Error
 }
 
@@ -1855,6 +1813,7 @@ type PostApiV1ControlplanesResponse struct {
 	HTTPResponse *http.Response
 	JSON400      *Oauth2Error
 	JSON401      *Oauth2Error
+	JSON409      *Oauth2Error
 	JSON500      *Oauth2Error
 }
 
@@ -1879,6 +1838,7 @@ type DeleteApiV1ControlplanesControlPlaneNameResponse struct {
 	HTTPResponse *http.Response
 	JSON400      *Oauth2Error
 	JSON401      *Oauth2Error
+	JSON404      *Oauth2Error
 	JSON500      *Oauth2Error
 }
 
@@ -1904,6 +1864,7 @@ type GetApiV1ControlplanesControlPlaneNameResponse struct {
 	JSON200      *ControlPlane
 	JSON400      *Oauth2Error
 	JSON401      *Oauth2Error
+	JSON404      *Oauth2Error
 	JSON500      *Oauth2Error
 }
 
@@ -1928,6 +1889,7 @@ type PutApiV1ControlplanesControlPlaneNameResponse struct {
 	HTTPResponse *http.Response
 	JSON400      *Oauth2Error
 	JSON401      *Oauth2Error
+	JSON404      *Oauth2Error
 	JSON500      *Oauth2Error
 }
 
@@ -1953,6 +1915,7 @@ type GetApiV1ControlplanesControlPlaneNameClustersResponse struct {
 	JSON200      *KubernetesClusters
 	JSON400      *Oauth2Error
 	JSON401      *Oauth2Error
+	JSON404      *Oauth2Error
 	JSON500      *Oauth2Error
 }
 
@@ -1977,6 +1940,7 @@ type PostApiV1ControlplanesControlPlaneNameClustersResponse struct {
 	HTTPResponse *http.Response
 	JSON400      *Oauth2Error
 	JSON401      *Oauth2Error
+	JSON409      *Oauth2Error
 	JSON500      *Oauth2Error
 }
 
@@ -2001,6 +1965,7 @@ type DeleteApiV1ControlplanesControlPlaneNameClustersClusterNameResponse struct 
 	HTTPResponse *http.Response
 	JSON400      *Oauth2Error
 	JSON401      *Oauth2Error
+	JSON404      *Oauth2Error
 	JSON500      *Oauth2Error
 }
 
@@ -2026,6 +1991,7 @@ type GetApiV1ControlplanesControlPlaneNameClustersClusterNameResponse struct {
 	JSON200      *KubernetesCluster
 	JSON400      *Oauth2Error
 	JSON401      *Oauth2Error
+	JSON404      *Oauth2Error
 	JSON500      *Oauth2Error
 }
 
@@ -2050,6 +2016,7 @@ type PutApiV1ControlplanesControlPlaneNameClustersClusterNameResponse struct {
 	HTTPResponse *http.Response
 	JSON400      *Oauth2Error
 	JSON401      *Oauth2Error
+	JSON404      *Oauth2Error
 	JSON500      *Oauth2Error
 }
 
@@ -2074,6 +2041,7 @@ type GetApiV1ControlplanesControlPlaneNameClustersClusterNameKubeconfigResponse 
 	HTTPResponse *http.Response
 	JSON400      *Oauth2Error
 	JSON401      *Oauth2Error
+	JSON404      *Oauth2Error
 	JSON500      *Oauth2Error
 }
 
@@ -2098,6 +2066,7 @@ type DeleteApiV1ProjectResponse struct {
 	HTTPResponse *http.Response
 	JSON400      *Oauth2Error
 	JSON401      *Oauth2Error
+	JSON404      *Oauth2Error
 	JSON500      *Oauth2Error
 }
 
@@ -2117,36 +2086,12 @@ func (r DeleteApiV1ProjectResponse) StatusCode() int {
 	return 0
 }
 
-type GetApiV1ProjectResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *Project
-	JSON400      *Oauth2Error
-	JSON401      *Oauth2Error
-	JSON500      *Oauth2Error
-}
-
-// Status returns HTTPResponse.Status
-func (r GetApiV1ProjectResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetApiV1ProjectResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type PostApiV1ProjectResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON400      *Oauth2Error
 	JSON401      *Oauth2Error
+	JSON409      *Oauth2Error
 	JSON500      *Oauth2Error
 }
 
@@ -2341,22 +2286,22 @@ func (r GetApiV1ProvidersOpenstackProjectsResponse) StatusCode() int {
 	return 0
 }
 
-// GetApiV1ApplicationBundlesClusterWithResponse request returning *GetApiV1ApplicationBundlesClusterResponse
-func (c *ClientWithResponses) GetApiV1ApplicationBundlesClusterWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1ApplicationBundlesClusterResponse, error) {
-	rsp, err := c.GetApiV1ApplicationBundlesCluster(ctx, reqEditors...)
+// GetApiV1ApplicationbundlesClusterWithResponse request returning *GetApiV1ApplicationbundlesClusterResponse
+func (c *ClientWithResponses) GetApiV1ApplicationbundlesClusterWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1ApplicationbundlesClusterResponse, error) {
+	rsp, err := c.GetApiV1ApplicationbundlesCluster(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiV1ApplicationBundlesClusterResponse(rsp)
+	return ParseGetApiV1ApplicationbundlesClusterResponse(rsp)
 }
 
-// GetApiV1ApplicationBundlesControlPlaneWithResponse request returning *GetApiV1ApplicationBundlesControlPlaneResponse
-func (c *ClientWithResponses) GetApiV1ApplicationBundlesControlPlaneWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1ApplicationBundlesControlPlaneResponse, error) {
-	rsp, err := c.GetApiV1ApplicationBundlesControlPlane(ctx, reqEditors...)
+// GetApiV1ApplicationbundlesControlPlaneWithResponse request returning *GetApiV1ApplicationbundlesControlPlaneResponse
+func (c *ClientWithResponses) GetApiV1ApplicationbundlesControlPlaneWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1ApplicationbundlesControlPlaneResponse, error) {
+	rsp, err := c.GetApiV1ApplicationbundlesControlPlane(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiV1ApplicationBundlesControlPlaneResponse(rsp)
+	return ParseGetApiV1ApplicationbundlesControlPlaneResponse(rsp)
 }
 
 // GetApiV1AuthJwksWithResponse request returning *GetApiV1AuthJwksResponse
@@ -2560,15 +2505,6 @@ func (c *ClientWithResponses) DeleteApiV1ProjectWithResponse(ctx context.Context
 	return ParseDeleteApiV1ProjectResponse(rsp)
 }
 
-// GetApiV1ProjectWithResponse request returning *GetApiV1ProjectResponse
-func (c *ClientWithResponses) GetApiV1ProjectWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1ProjectResponse, error) {
-	rsp, err := c.GetApiV1Project(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetApiV1ProjectResponse(rsp)
-}
-
 // PostApiV1ProjectWithResponse request returning *PostApiV1ProjectResponse
 func (c *ClientWithResponses) PostApiV1ProjectWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostApiV1ProjectResponse, error) {
 	rsp, err := c.PostApiV1Project(ctx, reqEditors...)
@@ -2641,15 +2577,15 @@ func (c *ClientWithResponses) GetApiV1ProvidersOpenstackProjectsWithResponse(ctx
 	return ParseGetApiV1ProvidersOpenstackProjectsResponse(rsp)
 }
 
-// ParseGetApiV1ApplicationBundlesClusterResponse parses an HTTP response from a GetApiV1ApplicationBundlesClusterWithResponse call
-func ParseGetApiV1ApplicationBundlesClusterResponse(rsp *http.Response) (*GetApiV1ApplicationBundlesClusterResponse, error) {
+// ParseGetApiV1ApplicationbundlesClusterResponse parses an HTTP response from a GetApiV1ApplicationbundlesClusterWithResponse call
+func ParseGetApiV1ApplicationbundlesClusterResponse(rsp *http.Response) (*GetApiV1ApplicationbundlesClusterResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiV1ApplicationBundlesClusterResponse{
+	response := &GetApiV1ApplicationbundlesClusterResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2688,15 +2624,15 @@ func ParseGetApiV1ApplicationBundlesClusterResponse(rsp *http.Response) (*GetApi
 	return response, nil
 }
 
-// ParseGetApiV1ApplicationBundlesControlPlaneResponse parses an HTTP response from a GetApiV1ApplicationBundlesControlPlaneWithResponse call
-func ParseGetApiV1ApplicationBundlesControlPlaneResponse(rsp *http.Response) (*GetApiV1ApplicationBundlesControlPlaneResponse, error) {
+// ParseGetApiV1ApplicationbundlesControlPlaneResponse parses an HTTP response from a GetApiV1ApplicationbundlesControlPlaneWithResponse call
+func ParseGetApiV1ApplicationbundlesControlPlaneResponse(rsp *http.Response) (*GetApiV1ApplicationbundlesControlPlaneResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiV1ApplicationBundlesControlPlaneResponse{
+	response := &GetApiV1ApplicationbundlesControlPlaneResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2756,6 +2692,13 @@ func ParseGetApiV1AuthJwksResponse(rsp *http.Response) (*GetApiV1AuthJwksRespons
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Oauth2Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
 	}
 
 	return response, nil
@@ -2808,6 +2751,13 @@ func ParsePostApiV1AuthOauth2TokensResponse(rsp *http.Response) (*PostApiV1AuthO
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Token
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest Oauth2Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -2942,6 +2892,13 @@ func ParseGetApiV1ControlplanesResponse(rsp *http.Response) (*GetApiV1Controlpla
 		}
 		response.JSON401 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Oauth2Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Oauth2Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -2982,6 +2939,13 @@ func ParsePostApiV1ControlplanesResponse(rsp *http.Response) (*PostApiV1Controlp
 		}
 		response.JSON401 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Oauth2Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Oauth2Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -3021,6 +2985,13 @@ func ParseDeleteApiV1ControlplanesControlPlaneNameResponse(rsp *http.Response) (
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Oauth2Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Oauth2Error
@@ -3069,6 +3040,13 @@ func ParseGetApiV1ControlplanesControlPlaneNameResponse(rsp *http.Response) (*Ge
 		}
 		response.JSON401 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Oauth2Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Oauth2Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -3108,6 +3086,13 @@ func ParsePutApiV1ControlplanesControlPlaneNameResponse(rsp *http.Response) (*Pu
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Oauth2Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Oauth2Error
@@ -3156,6 +3141,13 @@ func ParseGetApiV1ControlplanesControlPlaneNameClustersResponse(rsp *http.Respon
 		}
 		response.JSON401 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Oauth2Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Oauth2Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -3196,6 +3188,13 @@ func ParsePostApiV1ControlplanesControlPlaneNameClustersResponse(rsp *http.Respo
 		}
 		response.JSON401 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Oauth2Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Oauth2Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -3235,6 +3234,13 @@ func ParseDeleteApiV1ControlplanesControlPlaneNameClustersClusterNameResponse(rs
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Oauth2Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Oauth2Error
@@ -3283,6 +3289,13 @@ func ParseGetApiV1ControlplanesControlPlaneNameClustersClusterNameResponse(rsp *
 		}
 		response.JSON401 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Oauth2Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Oauth2Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -3322,6 +3335,13 @@ func ParsePutApiV1ControlplanesControlPlaneNameClustersClusterNameResponse(rsp *
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Oauth2Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Oauth2Error
@@ -3363,6 +3383,13 @@ func ParseGetApiV1ControlplanesControlPlaneNameClustersClusterNameKubeconfigResp
 		}
 		response.JSON401 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Oauth2Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Oauth2Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -3403,52 +3430,12 @@ func ParseDeleteApiV1ProjectResponse(rsp *http.Response) (*DeleteApiV1ProjectRes
 		}
 		response.JSON401 = &dest
 
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
 		var dest Oauth2Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetApiV1ProjectResponse parses an HTTP response from a GetApiV1ProjectWithResponse call
-func ParseGetApiV1ProjectResponse(rsp *http.Response) (*GetApiV1ProjectResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetApiV1ProjectResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Project
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest Oauth2Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Oauth2Error
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Oauth2Error
@@ -3489,6 +3476,13 @@ func ParsePostApiV1ProjectResponse(rsp *http.Response) (*PostApiV1ProjectRespons
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Oauth2Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest Oauth2Error

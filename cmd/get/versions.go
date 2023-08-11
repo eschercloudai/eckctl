@@ -41,7 +41,7 @@ func getControlPlaneBundles(token string) (versions []generated.ApplicationBundl
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := client.GetApiV1ApplicationBundlesControlPlane(ctx)
+	resp, err := client.GetApiV1ApplicationbundlesControlPlane(ctx)
 	if err != nil {
 		return
 	}
@@ -70,7 +70,7 @@ func getClusterBundles(token string) (versions []generated.ApplicationBundle, er
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := client.GetApiV1ApplicationBundlesCluster(ctx)
+	resp, err := client.GetApiV1ApplicationbundlesCluster(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
