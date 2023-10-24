@@ -22,7 +22,7 @@ jobs:
         with:
           version: latest
           skip-cache: true
-          args: -e S1039
+          args: -e S1039 --timeout 5m
   test:
     name: Run tests
     runs-on: 'ubuntu-22.04'
