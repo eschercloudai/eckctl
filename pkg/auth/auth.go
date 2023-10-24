@@ -14,17 +14,17 @@ import (
 )
 
 // NewClient is a helper to abstract away client authentication.
-func NewClient(server string, accessToken string) (*generated.ClientWithResponses, error) {
-	return generated.NewClientWithResponses(server, generated.WithHTTPClient(httpClient(false)), generated.WithRequestEditorFn(bearerTokenInjector(accessToken)))
+func NewClient(server string, accessToken string, insecure bool) (*generated.ClientWithResponses, error) {
+	return generated.NewClientWithResponses(server, generated.WithHTTPClient(httpClient(insecure)), generated.WithRequestEditorFn(bearerTokenInjector(accessToken)))
 }
 
-func GetToken(server string, u string, p string, project string) (accessToken string, err error) {
-	token, err := oauth2Authenticate(server, u, p)
+func GetToken(server string, u string, p string, project string, insecure bool) (accessToken string, err error) {
+	token, err := oauth2Authenticate(server, u, p, insecure)
 	if err != nil {
 		return
 	}
 
-	scopedToken, err := getScopedToken(token, server, project)
+	scopedToken, err := getScopedToken(token, server, project, insecure)
 	if err != nil {
 		return
 	}
@@ -35,16 +35,12 @@ func GetToken(server string, u string, p string, project string) (accessToken st
 }
 
 func httpClient(insecure bool) *http.Client {
-	if insecure {
-		return &http.Client{
-			Transport: &http.Transport{
-				TLSClientConfig: &tls.Config{
-					InsecureSkipVerify: true,
-				},
+	return &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: insecure,
 			},
-		}
-	} else {
-		return &http.Client{}
+		},
 	}
 }
 
@@ -84,9 +80,9 @@ func bearerTokenInjector(token string) generated.RequestEditorFn {
 
 // Login via oauth2's password grant flow.  But you should never do this.
 // See https://tools.ietf.org/html/rfc6749#section-4.3.
-func oauth2Authenticate(server string, u string, p string) (*oauth2.Token, error) {
+func oauth2Authenticate(server string, u string, p string, insecure bool) (*oauth2.Token, error) {
 
-	client := httpClient(false)
+	client := httpClient(insecure)
 
 	ctx := context.WithValue(context.Background(), oauth2.HTTPClient, client)
 
@@ -100,8 +96,8 @@ func oauth2Authenticate(server string, u string, p string) (*oauth2.Token, error
 }
 
 // getScopedToken exchanges a token for one with a new project scope.
-func getScopedToken(token *oauth2.Token, server string, projectID string) (*generated.Token, error) {
-	client, err := NewClient(server, token.AccessToken)
+func getScopedToken(token *oauth2.Token, server string, projectID string, insecure bool) (*generated.Token, error) {
+	client, err := NewClient(server, token.AccessToken, insecure)
 	if err != nil {
 		return nil, err
 	}

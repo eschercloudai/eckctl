@@ -7,11 +7,12 @@ import (
 )
 
 var (
-	controlPlaneName          string
-	controlPlaneVersion       string
-	clusterName               string
-	clusterDefPath            string
-	url, u, p, project        string
+	controlPlaneName    string
+	controlPlaneVersion string
+	clusterName         string
+	clusterDefPath      string
+	insecure            bool
+	url, u, p, project  string
 )
 
 type ApplicationCredential struct {
