@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
-        "github.com/eschercloudai/eckctl/cmd/create"
-        "github.com/eschercloudai/eckctl/cmd/delete"
-        "github.com/eschercloudai/eckctl/cmd/get"
+	"github.com/eschercloudai/eckctl/cmd/create"
+	"github.com/eschercloudai/eckctl/cmd/delete"
+	"github.com/eschercloudai/eckctl/cmd/get"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"

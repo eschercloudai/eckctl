@@ -6,6 +6,7 @@ import (
 
 var (
 	url, u, p, project string
+	insecure           bool
 )
 
 func NewDeleteCommand() *cobra.Command {

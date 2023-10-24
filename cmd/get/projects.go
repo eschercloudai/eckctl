@@ -20,7 +20,8 @@ var projectsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 			cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
-		token, err := auth.GetToken(url, u, p, project)
+		insecure, _ = cmd.Flags().GetBool("insecure")
+		token, err := auth.GetToken(url, u, p, project, insecure)
 		if err != nil {
 			log.Fatalf("Error authenticating: %s", err)
 		}
@@ -33,7 +34,7 @@ var projectsCmd = &cobra.Command{
 
 func getProjects(token string) (err error) {
 
-	client, err := auth.NewClient(url, token)
+	client, err := auth.NewClient(url, token, insecure)
 	if err != nil {
 		return
 	}

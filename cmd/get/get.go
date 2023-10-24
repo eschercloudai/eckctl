@@ -12,6 +12,7 @@ var (
 	imageName          string
 	imageId            string
 	allFlag            bool
+	insecure           bool
 	url, u, p, project string
 )
 
