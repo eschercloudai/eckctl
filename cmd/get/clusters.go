@@ -23,12 +23,13 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			url, u, p, project = cmd.Flag("url").Value.String(), cmd.Flag("username").Value.String(),
 				cmd.Flag("password").Value.String(), cmd.Flag("project").Value.String()
+			clusterName = cmd.Flag("name").Value.String()
 			insecure, _ = cmd.Flags().GetBool("insecure")
 			token, err := auth.GetToken(url, u, p, project, insecure)
 			if err != nil {
 				log.Fatalf("Error authenticating: %s", err)
 			}
-			err = printClusters(token)
+			err = printClusters(token, clusterName)
 			if err != nil {
 				log.Fatalf("Error getting clusters: %s", err)
 			}
@@ -51,24 +52,33 @@ func printClusterDetails(controlPlane string, i generated.KubernetesCluster) {
 	}
 }
 
-func getClusters(controlplane string, token string) (clusters []generated.KubernetesCluster, err error) {
+func getClusters(controlplane string, clustername string, token string) ([]generated.KubernetesCluster, error) {
 
 	client, err := auth.NewClient(url, token, insecure)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := client.GetApiV1ControlplanesControlPlaneNameClusters(ctx, controlplane)
-	if err != nil {
-		return
+	var resp *http.Response
+
+	if clustername != "" {
+		resp, err = client.GetApiV1ControlplanesControlPlaneNameClustersClusterName(ctx, controlplane, clustername)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		resp, err = client.GetApiV1ControlplanesControlPlaneNameClusters(ctx, controlplane)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -80,19 +90,27 @@ func getClusters(controlplane string, token string) (clusters []generated.Kubern
 		default:
 			err = fmt.Errorf("Error retrieving cluster information, %v", resp.StatusCode)
 		}
-		return
+		return nil, err
 	}
 
-	clusters = generated.KubernetesClusters{}
+	var clusters generated.KubernetesClusters
+	var cluster generated.KubernetesCluster
+
+	if clustername != "" {
+		err = json.Unmarshal(body, &cluster)
+		clusters = append(clusters, cluster)
+		return clusters, err
+	}
+
 	err = json.Unmarshal(body, &clusters)
 	if err != nil {
-		return
+		return clusters, err
 	}
 
-	return
+	return clusters, err
 }
 
-func printClusters(token string) (err error) {
+func printClusters(token string, name string) (err error) {
 	controlPlanes, err := getControlPlanes(token)
 	if err != nil {
 		return err
@@ -102,7 +120,7 @@ func printClusters(token string) (err error) {
 			return
 		}
 		for _, c := range controlPlanes {
-			clusters, err := getClusters(c.Name, token)
+			clusters, err := getClusters(c.Name, "", token)
 			if err != nil {
 				return err
 			}
@@ -111,7 +129,12 @@ func printClusters(token string) (err error) {
 			}
 		}
 	} else if controlPlaneName != "" {
-		clusters, err := getClusters(controlPlaneName, token)
+		var clusters []generated.KubernetesCluster
+		if name != "" {
+			clusters, err = getClusters(controlPlaneName, name, token)
+		} else {
+			clusters, err = getClusters(controlPlaneName, "", token)
+		}
 		if err != nil {
 			return err
 		}
