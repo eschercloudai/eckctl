@@ -199,6 +199,9 @@ type KubernetesClusterFeatures struct {
 	// KubernetesDashboard Enable the Kubernetes dashboard.  Requires ingress and certManager to be enabled.
 	KubernetesDashboard *bool `json:"kubernetesDashboard,omitempty"`
 
+	// NvidiaOperator Install the NVIDIA Operator
+	NvidiaOperator *bool `json:"nvidiaOperator,omitempty"`
+
 	// Prometheus Enable Prometheus.
 	Prometheus *bool `json:"prometheus,omitempty"`
 }
@@ -511,6 +514,9 @@ type ControlPlaneResponse = ControlPlane
 
 // ControlPlanesResponse A list of control planes.
 type ControlPlanesResponse = ControlPlanes
+
+// ForbiddenResponse Generic error message.
+type ForbiddenResponse = Oauth2Error
 
 // InternalServerErrorResponse Generic error message.
 type InternalServerErrorResponse = Oauth2Error
