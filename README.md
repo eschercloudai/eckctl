@@ -123,3 +123,10 @@ Cluster: demo, version: v1.26.1, status: Provisioned.
   "platform": "linux/amd64"
 }
 ```
+### Testing Using Docker Image
+Use the below snippet to create the image and then use the commands above to test things work as expected.
+
+```shell
+docker build -t eckctl:v0.0.0 -f docker/Dockerfile .
+docker run --name eckctl -it --rm -v /home/$USER/.eckctl.yaml:/home/eckctl/.eckctl.yaml eckctl:v0.0.0 "eckctl get images"
+```

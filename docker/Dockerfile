@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM golang as go-builder
+FROM cgr.dev/chainguard/go:latest as go-builder
 
 WORKDIR /app
 
@@ -14,10 +14,10 @@ RUN go mod download
 RUN CGO_ENABLED=0 go build -o /tmp/eckctl /app/main.go
 
 
-FROM alpine:3.17
+FROM cgr.dev/chainguard/wolfi-base:latest
 
 RUN apk update --no-cache
-RUN apk add bash build-base jq curl git
+RUN apk add bash jq curl
 
 RUN echo "eckctl:x:1000:1000:Ecktl Non Root,,,:/home/eckctl:" >> /etc/passwd
 RUN mkdir -p /home/eckctl
