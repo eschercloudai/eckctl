@@ -43,17 +43,13 @@ func NewGetCommand() *cobra.Command {
 	getCmd.AddCommand(commands...)
 	imagesCmd.Flags().StringVar(&imageName, "name", "", "Name of image")
 	imagesCmd.Flags().StringVar(&imageId, "id", "", "ID of image")
-	clustersCmd.Flags().StringVar(&controlPlaneName, "controlplane", "", "Name of control plane")
+	clustersCmd.Flags().StringVar(&controlPlaneName, "controlplane", "default", "Name of control plane")
 	clustersCmd.Flags().BoolVar(&allFlag, "all", false, "Return all clusters across all control planes")
 	clustersCmd.Flags().StringVar(&clusterName, "name", "", "Name of cluster")
 	clustersCmd.MarkFlagsMutuallyExclusive("controlplane", "all")
-	kubeconfigCmd.Flags().StringVar(&controlPlaneName, "controlplane", "", "Name of control plane")
+	kubeconfigCmd.Flags().StringVar(&controlPlaneName, "controlplane", "default", "Name of control plane")
 	kubeconfigCmd.Flags().StringVar(&clusterName, "cluster", "", "Name of cluster")
-	err := kubeconfigCmd.MarkFlagRequired("controlplane")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	err = kubeconfigCmd.MarkFlagRequired("cluster")
+	err := kubeconfigCmd.MarkFlagRequired("cluster")
 	if err != nil {
 		log.Fatalln(err)
 	}

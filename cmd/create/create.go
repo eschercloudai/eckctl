@@ -39,12 +39,9 @@ func NewCreateCommand() *cobra.Command {
 	}
 	createControlPlaneCmd.Flags().StringVar(&controlPlaneVersion, "version", "1.2.0", "Version of control plane")
 	createClusterCmd.Flags().StringVar(&clusterName, "name", "", "Name of cluster")
-	createClusterCmd.Flags().StringVar(&controlPlaneName, "controlplane", "", "Name of associated control plane")
+	createClusterCmd.Flags().StringVar(&controlPlaneName, "controlplane", "default", "Name of associated control plane")
 	createClusterCmd.Flags().StringVar(&clusterDefPath, "json", "", "Path to JSON cluster definition")
 	if err := createClusterCmd.MarkFlagRequired("name"); err != nil {
-		log.Fatalln(err)
-	}
-	if err := createClusterCmd.MarkFlagRequired("controlplane"); err != nil {
 		log.Fatalln(err)
 	}
 	if err := createClusterCmd.MarkFlagRequired("json"); err != nil {

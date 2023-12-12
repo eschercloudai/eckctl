@@ -35,7 +35,7 @@ func deleteClusterCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVar(&clusterName, "name", "", "The name of the cluster to be deleted")
-	cmd.Flags().StringVar(&controlPlaneName, "controlplane", "", "The name of the associated control plane")
+	cmd.Flags().StringVar(&controlPlaneName, "controlplane", "default", "The name of the associated control plane.")
 	return cmd
 }
 
