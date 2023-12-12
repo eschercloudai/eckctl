@@ -70,18 +70,18 @@ Name: demo	Version: v1.26.1	Status: Provisioned
 ```shell
 % eckctl get versions
 Cluster Bundles:
-Name: kubernetes-cluster-1.0.0	Version: 1.0.0
-Name: kubernetes-cluster-1.1.0	Version: 1.1.0
-Name: kubernetes-cluster-1.2.0	Version: 1.2.0
+Name: kubernetes-cluster-1.3.1	Version: 1.3.1	EOL: 04 Dec 23 00:00 UTC
+Name: kubernetes-cluster-1.4.1	Version: 1.4.1
 Control Plane Bundles:
-Name: control-plane-1.0.0	Version: 1.0.0
-Name: control-plane-1.0.1	Version: 1.0.1
+Name: control-plane-1.1.0	Version: 1.1.0	EOL: 04 Dec 23 00:00 UTC
+Name: control-plane-1.2.0	Version: 1.2.0
+
 ```
 
 ### Create a control plane
 
 ```shell
-% eckctl create controlplane --name default --version 1.0.1
+% eckctl create controlplane --name default --version 1.2.0
 ```
 
 ### Create a cluster
@@ -91,12 +91,19 @@ Creating a cluster requires a number of parameters to be defined, including work
 ```shell
 % eckctl get controlplane --name default
 Name: default	Status: Provisioned	Version: 1.0.1
-% eckctl create cluster --name demo \
-  --controlplane default --json ./examples/cluster.json
-% eckctl get cluster --name demo --controlplane default
+% eckctl create cluster --name demo ./examples/cluster.json
+% eckctl get cluster --name demo
 Cluster: demo, version: v1.26.1, status: Provisioning.
 └── Pools:
     └── Name: worker	Flavor: g.2.standard	Image: eck-230408-3464bc03
+```
+
+### Update a cluster
+
+Similar to `create`, an existing cluster can be updated with the `update` command and the (full) JSON definition:
+
+```shell
+% eckctl update cluster --name demo --json ./examples/cluster.json
 ```
 
 ### Retrieve kubeconfig
@@ -104,11 +111,11 @@ Cluster: demo, version: v1.26.1, status: Provisioning.
 Once the cluster's status is `Provisioned` you can retrieve its kubeconfig:
 
 ```shell
-% eckctl get clusters --controlplane default --name demo
+% eckctl get clusters --name demo
 Cluster: demo, version: v1.26.1, status: Provisioned.
 └── Pools:
     └── Name: worker	Flavor: g.2.standard	Image: eck-230408-3464bc03
-% eckctl get kubeconfig --controlplane default --cluster demo > ~/kubeconfig-demo
+% eckctl get kubeconfig --cluster demo > ~/kubeconfig-demo
 % export KUBECONFIG=~/kubeconfig-demo
 % kubectl version -o json | jq .serverVersion
 {
