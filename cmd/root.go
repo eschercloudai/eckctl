@@ -46,6 +46,7 @@ func NewRootCommand() *cobra.Command {
 	rootCmd.PersistentFlags().StringVar(&username, "username", "", "Username")
 	rootCmd.PersistentFlags().StringVar(&password, "password", "", "Password")
 	rootCmd.PersistentFlags().StringVar(&project, "project", "", "Project ID")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "Path to configuration file")
 	rootCmd.PersistentFlags().BoolVar(&insecure, "insecure", false, "Disable server certificate validation, for use when testing")
 
 	return rootCmd
