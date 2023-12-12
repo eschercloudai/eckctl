@@ -8,6 +8,7 @@ import (
 	"github.com/eschercloudai/eckctl/cmd/create"
 	"github.com/eschercloudai/eckctl/cmd/delete"
 	"github.com/eschercloudai/eckctl/cmd/get"
+	"github.com/eschercloudai/eckctl/cmd/update"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -22,9 +23,10 @@ var (
 func Execute() {
 	cmd := NewRootCommand()
 	commands := []*cobra.Command{
-		get.NewGetCommand(),
 		create.NewCreateCommand(),
 		delete.NewDeleteCommand(),
+		get.NewGetCommand(),
+		update.NewUpdateCommand(),
 	}
 	cmd.AddCommand(commands...)
 	if err := cmd.Execute(); err != nil {
