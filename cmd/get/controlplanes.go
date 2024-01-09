@@ -80,7 +80,10 @@ func printControlPlanes(token string) (err error) {
 		return
 	}
 	for _, i := range cps {
-		if (controlPlaneName != "" && i.Name == controlPlaneName) || (controlPlaneName == "") {
+		if i.Name == controlPlaneName {
+			printControlPlaneDetails(i)
+			break
+		} else {
 			printControlPlaneDetails(i)
 		}
 	}
