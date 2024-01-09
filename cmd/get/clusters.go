@@ -84,7 +84,7 @@ func getClusters(controlplane string, clustername string, token string) ([]gener
 	if resp.StatusCode != http.StatusOK {
 		switch resp.StatusCode {
 		case http.StatusNotFound:
-			err = fmt.Errorf("Control plane not found, %v", resp.StatusCode)
+			err = fmt.Errorf("Cluster not found, %v", resp.StatusCode)
 		case http.StatusInternalServerError:
 			err = fmt.Errorf("Server error, %v", resp.StatusCode)
 		default:

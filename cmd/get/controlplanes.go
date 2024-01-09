@@ -56,8 +56,13 @@ func getControlPlanes(token string) (controlPlanes []generated.ControlPlane, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		err = fmt.Errorf("Error retrieving control plane information, %v", resp.StatusCode)
-		return
+		switch resp.StatusCode {
+		case http.StatusInternalServerError:
+			err = fmt.Errorf("Server error, %v", resp.StatusCode)
+		default:
+			err = fmt.Errorf("Error retrieving control plane information, %v", resp.StatusCode)
+		}
+		return nil, err
 	}
 
 	body, err := io.ReadAll(resp.Body)
