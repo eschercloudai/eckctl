@@ -128,18 +128,18 @@ func printClusters(token string, name string) (err error) {
 				printClusterDetails(c.Name, s)
 			}
 		}
-	} else if controlPlaneName != "" {
+	} else if clusterControlPlaneName != "" {
 		var clusters []generated.KubernetesCluster
 		if name != "" {
-			clusters, err = getClusters(controlPlaneName, name, token)
+			clusters, err = getClusters(clusterControlPlaneName, name, token)
 		} else {
-			clusters, err = getClusters(controlPlaneName, "", token)
+			clusters, err = getClusters(clusterControlPlaneName, "", token)
 		}
 		if err != nil {
 			return err
 		}
 		for _, c := range clusters {
-			printClusterDetails(controlPlaneName, c)
+			printClusterDetails(clusterControlPlaneName, c)
 		}
 	} else {
 		log.Fatal("Error: Either --controlplane or --all must be specified")

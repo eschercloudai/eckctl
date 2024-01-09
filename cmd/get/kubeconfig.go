@@ -39,7 +39,7 @@ func getKubeConfig(token string) (kubeconfig string, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := client.GetApiV1ControlplanesControlPlaneNameClustersClusterNameKubeconfig(ctx, controlPlaneName, clusterName)
+	resp, err := client.GetApiV1ControlplanesControlPlaneNameClustersClusterNameKubeconfig(ctx, clusterControlPlaneName, clusterName)
 	if err != nil {
 		return
 	}
